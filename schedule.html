@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Расписание — EduTwin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #7209b7;
+            --accent: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4cc9f0;
+            --warning: #ffb800;
+            --danger: #ef476f;
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+            --gradient: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(45deg, #e0c3fc 0%, #8ec5fc 100%);
+            background-size: cover;
+            background-position: center;
+            padding: 20px;
+            transition: background-image 0.5s ease;
+        }
+
+        .weather-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: hidden; }
+        .snow-flake { position: absolute; background: white; border-radius: 50%; animation: fall linear infinite; opacity: 0.8; }
+        .rain-drop { position: absolute; width: 2px; height: 15px; background: rgba(255,255,255,0.6); animation: fallRain linear infinite; }
+        @keyframes fall { to { transform: translateY(105vh); } }
+        @keyframes fallRain { to { transform: translateY(105vh); } }
+
+        .main-wrapper { width: 100%; max-width: 1000px; z-index: 10; position: relative; }
+
+        .top-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .nav-btn { background: white; border: none; padding: 10px 20px; border-radius: 50px; font-weight: 600; color: var(--dark); cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 8px; transition: transform 0.2s, box-shadow 0.2s; text-decoration: none; }
+        .nav-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+        .nav-btn.primary { background: var(--primary); color: white; }
+
+        .calendar-card { background: var(--glass-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--glass-border); border-radius: 24px; padding: 30px; box-shadow: var(--glass-shadow); animation: fadeIn 0.5s ease-out; }
+
+        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .month-title { font-size: 1.8rem; font-weight: 800; color: var(--dark); text-transform: capitalize; }
+        .month-btn { width: 40px; height: 40px; border-radius: 12px; border: 1px solid var(--gray-3); background: white; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; color: var(--dark); }
+        .month-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
+
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
+        .weekday { text-align: center; font-weight: 600; color: var(--gray-7); font-size: 0.9rem; padding-bottom: 10px; text-transform: uppercase; }
+
+        .day-cell { background: rgba(255,255,255,0.6); border-radius: 16px; min-height: 100px; padding: 10px; position: relative; cursor: pointer; transition: 0.2s; border: 2px solid transparent; display: flex; flex-direction: column; justify-content: space-between; }
+        .day-cell:hover { background: white; transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .day-cell.empty { background: transparent; cursor: default; }
+        .day-cell.today { border-color: var(--primary); background: white; }
+        .day-cell.selected { background: var(--primary); color: white; }
+        .day-number { font-weight: 700; font-size: 1.1rem; }
+        .day-cell.today .day-number { color: var(--primary); }
+        .day-cell.selected .day-number, .day-cell.selected .day-status { color: white; }
+        .day-status { font-size: 0.75rem; font-weight: 600; text-align: right; color: var(--secondary); margin-top: auto; }
+        
+        .event-dots { display: flex; gap: 4px; margin-top: 5px; }
+        .dot { width: 6px; height: 6px; border-radius: 50%; }
+        .dot.class { background-color: var(--success); }
+        .dot.exam { background-color: var(--danger); }
+        .dot.holiday { background-color: var(--warning); }
+
+        .schedule-modal { position: fixed; top: 0; right: 0; width: 400px; height: 100%; background: white; z-index: 100; box-shadow: -10px 0 30px rgba(0,0,0,0.1); padding: 30px; transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); overflow-y: auto; }
+        .schedule-modal.active { transform: translateX(0); }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 90; opacity: 0; pointer-events: none; transition: 0.3s; }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .modal-date { font-size: 1.5rem; font-weight: 800; color: var(--dark); line-height: 1.2; }
+        .close-modal { background: none; border: none; font-size: 2rem; cursor: pointer; color: var(--gray-7); }
+
+        .schedule-list { display: flex; flex-direction: column; gap: 15px; }
+        .schedule-item { background: var(--light); padding: 20px; border-radius: 16px; border-left: 5px solid var(--primary); position: relative; }
+        .schedule-item h4 { font-size: 1rem; margin-bottom: 5px; color: var(--dark); }
+        .schedule-item p { font-size: 0.9rem; color: var(--gray-7); display: flex; align-items: center; gap: 8px; margin-bottom: 3px; }
+        .time-badge { display: inline-block; background: var(--dark); color: white; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; margin-bottom: 10px; }
+        
+        .remind-btn { position: absolute; top: 20px; right: 20px; background: white; border: 1px solid #ddd; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--gray-7); transition: 0.2s; }
+        .remind-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
+        .remind-btn.active { background: var(--success); color: white; border-color: var(--success); }
+
+        .settings-panel { position: absolute; top: 60px; right: 0; background: white; padding: 20px; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); width: 320px; display: none; z-index: 20; }
+        .settings-panel.visible { display: block; animation: fadeIn 0.2s; }
+        .settings-panel h3 { font-size: 1.1rem; margin-bottom: 15px; }
+        .setting-row { margin-bottom: 15px; }
+        .setting-row label { display: block; margin-bottom: 8px; font-size: 0.9rem; color: var(--gray-7); }
+        .setting-row select, .setting-row input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ddd; font-size: 0.9rem; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media (max-width: 768px) {
+            .calendar-grid { gap: 5px; }
+            .day-cell { min-height: 60px; padding: 5px; border-radius: 10px; }
+            .day-status { display: none; }
+            .calendar-card { padding: 15px; }
+            .schedule-modal { width: 100%; border-radius: 20px 20px 0 0; top: auto; bottom: 0; height: 80vh; transform: translateY(100%); }
+            .schedule-modal.active { transform: translateY(0); }
+            .top-nav { flex-wrap: wrap; gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="weather-container" id="weather-effect"></div>
+
+    <div class="main-wrapper">
+        <div class="top-nav">
+            <a href="index.html" class="nav-btn"><i class="fas fa-arrow-left"></i> На главную</a>
+            
+            <div style="position: relative;">
+                <button class="nav-btn primary" id="settings-toggle">
+                    <i class="fas fa-bell"></i> Напоминания
+                </button>
+                <div class="settings-panel" id="settings-panel">
+                    <h3>Настройки уведомлений</h3>
+                    <div class="setting-row">
+                        <label>Email для уведомлений (Gmail):</label>
+                        <input type="email" id="user-email" placeholder="vash_email@gmail.com">
+                    </div>
+                    <div class="setting-row">
+                        <label>Напомнить за:</label>
+                        <select id="reminder-time">
+                            <option value="5">5 минут</option>
+                            <option value="10" selected>10 минут</option>
+                            <option value="15">15 минут</option>
+                            <option value="30">30 минут</option>
+                        </select>
+                    </div>
+                    <p style="font-size: 0.8rem; color: #999;">Уведомления приходят, даже если сайт закрыт (требуется поддержка браузера или Email).</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="calendar-card">
+            <div class="calendar-header">
+                <button class="month-btn" id="prev-month"><i class="fas fa-chevron-left"></i></button>
+                <div class="month-title" id="month-display">Январь 2025</div>
+                <button class="month-btn" id="next-month"><i class="fas fa-chevron-right"></i></button>
+            </div>
+            
+            <div class="calendar-grid">
+                <div class="weekday">Пн</div>
+                <div class="weekday">Вт</div>
+                <div class="weekday">Ср</div>
+                <div class="weekday">Чт</div>
+                <div class="weekday">Пт</div>
+                <div class="weekday">Сб</div>
+                <div class="weekday">Вс</div>
+                
+                <div id="days-container" style="display: contents;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-overlay"></div>
+    <div class="schedule-modal" id="schedule-modal">
+        <div class="modal-header">
+            <div class="modal-date" id="modal-date-title">10 Сентября</div>
+            <button class="close-modal" id="close-modal">&times;</button>
+        </div>
+        <div id="schedule-content" class="schedule-list"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            const scheduleData = {
+                0: [ { time: 'Выходной', subject: 'Нет занятий', teacher: 'Отдыхайте', room: 'Дом', type: 'free' } ],
+                1: [ { time: '08:00-09:30', subject: 'Веб-контентті басқару (CMS)', teacher: 'Китуева С.С.', room: '209', type: 'lecture' }, { time: '09:40-11:10', subject: 'Веб-контентті басқару (CMS)', teacher: 'Китуева С.С.', room: '209', type: 'practice' }, { time: '11:20-12:50', subject: 'Безопасность в CMS', teacher: 'Китуева С.С.', room: '209', type: 'lab' } ],
+                2: [ { time: '08:00-09:30', subject: 'Веб-контентті басқару (CMS)', teacher: 'Китуева С.С.', room: '209', type: 'lecture' }, { time: '09:40-11:10', subject: 'Безопасность в CMS', teacher: 'Китуева С.С.', room: '209', type: 'practice' }, { time: '11:20-12:50', subject: 'Безопасность в CMS', teacher: 'Китуева С.С.', room: '209', type: 'lab' } ],
+                3: [ { time: '08:00-09:30', subject: 'Веб-контентті басқару (CMS)', teacher: 'Китуева С.С.', room: '209', type: 'lecture' }, { time: '09:40-11:10', subject: 'Безопасность в CMS', teacher: 'Китуева С.С.', room: '209', type: 'practice' }, { time: '11:20-12:50', subject: 'Безопасность в CMS', teacher: 'Китуева С.С.', room: '209', type: 'lab' } ],
+                4: [ { time: '08:00-09:30', subject: 'Веб-контентті басқару (CMS)', teacher: 'Китуева С.С.', room: '209', type: 'lecture' }, { time: '09:40-11:10', subject: 'Безопасность в CMS', teacher: 'Китуева С.С.', room: '209', type: 'practice' }, { time: '11:20-12:50', subject: 'Безопасность в CMS', teacher: 'Китуева С.С.', room: '209', type: 'lab' } ],
+                5: [ { time: '08:00-09:30', subject: 'Веб-контентті басқару (CMS)', teacher: 'Китуева С.С.', room: '209', type: 'lecture' }, { time: '09:40-11:10', subject: 'Безопасность в CMS', teacher: 'Китуева С.С.', room: '209', type: 'practice' }, { time: '11:20-12:50', subject: 'Физическая культура', teacher: 'Нұржігіт М.С.', room: 'Спортзал', type: 'sport' } ],
+                6: [ { time: '08:00-09:30', subject: 'Физическая культура', teacher: 'Нұржігіт М.С.', room: 'Спортзал', type: 'sport' }, { time: '09:40-11:10', subject: 'Веб-контентті басқару (CMS)', teacher: 'Китуева С.С.', room: 'с/з', type: 'lecture' }, { time: '11:20-12:50', subject: 'Безопасность в CMS', teacher: 'Китуева С.С.', room: '209', type: 'lab' } ]
+            };
+
+            const monthNames = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
+            const monthBackgrounds = ['january.png', 'february.png', 'march.png', 'april.png', 'may.png', 'june.png', 'july.png', 'august.png', 'september.png', 'october.png', 'november.png', 'december.png'];
+
+            let navDate = new Date();
+            let scheduledNotifications = new Set();
+            let currentReminderOffset = localStorage.getItem('reminderTime') || '10';
+            const weekTypeMeaning = { 'ПП': 'Производственная Практика', 'К': 'Каникулы', 'ПА': 'Промежуточная аттестация', 'ИА': 'Итоговая аттестация' };
+            
+            document.getElementById('reminder-time').value = currentReminderOffset;
+            const emailInput = document.getElementById('user-email');
+            emailInput.value = localStorage.getItem('userEmail') || '';
+
+            if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost')) {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(() => console.log('SW Registered'))
+                    .catch(e => console.warn('SW Fail:', e));
+                
+                navigator.serviceWorker.addEventListener('message', event => {
+                    const data = event.data;
+                    if (data.success && data.timestamp) {
+                        scheduledNotifications.add(data.timestamp);
+                        renderScheduleModal(new Date(document.getElementById('modal-date-title').dataset.rawDate));
+                    }
+                });
+            }
+
+            const calendarGrid = document.getElementById('days-container');
+            const monthDisplay = document.getElementById('month-display');
+
+            function renderCalendar() {
+                calendarGrid.innerHTML = '';
+                const year = navDate.getFullYear();
+                const month = navDate.getMonth();
+                
+                document.body.style.backgroundImage = `url('${monthBackgrounds[month]}')`;
+                monthDisplay.textContent = `${monthNames[month]} ${year}`;
+
+                const firstDay = new Date(year, month, 1);
+                const lastDay = new Date(year, month + 1, 0);
+                const daysInMonth = lastDay.getDate();
+                
+                let paddingDays = firstDay.getDay() - 1;
+                if (paddingDays === -1) paddingDays = 6;
+
+                for (let i = 0; i < paddingDays; i++) {
+                    const emptyCell = document.createElement('div');
+                    emptyCell.classList.add('day-cell', 'empty');
+                    calendarGrid.appendChild(emptyCell);
+                }
+
+                for (let i = 1; i <= daysInMonth; i++) {
+                    const dayDate = new Date(year, month, i);
+                    const dayEl = document.createElement('div');
+                    dayEl.classList.add('day-cell');
+                    
+                    const today = new Date();
+                    if (i === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+                        dayEl.classList.add('today');
+                    }
+
+                    const status = getDayStatus(dayDate);
+                    const dayOfWeek = dayDate.getDay(); 
+                    
+                    let statusHtml = '';
+                    let dotsHtml = '';
+
+                    if (status) {
+                        statusHtml = `<div class="day-status">${status}</div>`;
+                        if (status === 'К') dotsHtml = '<div class="event-dots"><div class="dot holiday"></div></div>';
+                        else if (status === 'ИА' || status === 'ПА') dotsHtml = '<div class="event-dots"><div class="dot exam"></div></div>';
+                        else dotsHtml = '<div class="event-dots"><div class="dot class"></div></div>';
+                    } 
+                    else if (dayOfWeek !== 0 && scheduleData[dayOfWeek]) {
+                        dotsHtml = '<div class="event-dots"><div class="dot class"></div><div class="dot class"></div></div>';
+                    }
+
+                    dayEl.innerHTML = `
+                        <div class="day-number">${i}</div>
+                        ${dotsHtml}
+                        ${statusHtml}
+                    `;
+
+                    dayEl.addEventListener('click', () => openSchedule(dayDate));
+                    calendarGrid.appendChild(dayEl);
+                }
+            }
+
+            function getDayStatus(date) {
+                const checkDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+                const studyYearStart = new Date('2025-09-01');
+                const yearShift = checkDate >= studyYearStart ? 1 : 0;
+                
+                const ranges = [
+                    { start: `202${4+yearShift}-11-24`, end: `202${5+yearShift}-01-05`, status: 'ПП' },
+                    { start: `202${5+yearShift}-01-12`, end: `202${5+yearShift}-01-17`, status: 'ПА' },
+                    { start: `202${5+yearShift}-01-19`, end: `202${5+yearShift}-01-26`, status: 'К' },
+                    { start: `202${5+yearShift}-04-06`, end: `202${5+yearShift}-06-08`, status: 'ПП' },
+                    { start: `202${5+yearShift}-06-15`, end: `202${5+yearShift}-06-22`, status: 'ИА' }
+                ];
+                
+                for (const range of ranges) {
+                    if (checkDate >= new Date(range.start) && checkDate <= new Date(range.end)) return range.status;
+                }
+                return '';
+            }
+
+            const modal = document.getElementById('schedule-modal');
+            const overlay = document.getElementById('modal-overlay');
+            const scheduleContent = document.getElementById('schedule-content');
+            const modalDateTitle = document.getElementById('modal-date-title');
+
+            function openSchedule(date) {
+                renderScheduleModal(date);
+                modal.classList.add('active');
+                overlay.classList.add('active');
+                modalDateTitle.dataset.rawDate = date.toISOString();
+            }
+
+            function closeSchedule() {
+                modal.classList.remove('active');
+                overlay.classList.remove('active');
+            }
+
+            function renderScheduleModal(date) {
+                const options = { weekday: 'long', day: 'numeric', month: 'long' };
+                modalDateTitle.textContent = date.toLocaleDateString('ru-RU', options);
+                
+                scheduleContent.innerHTML = '';
+                const dayOfWeek = date.getDay();
+                const status = getDayStatus(date);
+
+                if (status) {
+                    const desc = weekTypeMeaning[status];
+                    scheduleContent.innerHTML = `
+                        <div class="schedule-item" style="border-color: var(--accent);">
+                            <h4>${status} - ${desc}</h4>
+                            <p>Весь день</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const classes = scheduleData[dayOfWeek];
+                if (!classes || classes.length === 0 || dayOfWeek === 0) {
+                     scheduleContent.innerHTML = `
+                        <div class="schedule-item" style="border-color: var(--success); text-align: center;">
+                            <h4 style="margin:0;">Выходной день 🌴</h4>
+                            <p style="justify-content:center;">Занятий нет</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                classes.forEach(cls => {
+                    if (cls.time === 'Выходной') return;
+
+                    const div = document.createElement('div');
+                    div.className = 'schedule-item';
+                    div.innerHTML = `
+                        <span class="time-badge">${cls.time}</span>
+                        <h4>${cls.subject}</h4>
+                        <p><i class="fas fa-chalkboard-teacher"></i> ${cls.teacher}</p>
+                        <p><i class="fas fa-map-marker-alt"></i> Каб. ${cls.room}</p>
+                    `;
+                    
+                    const startTime = cls.time.split('-')[0];
+                    const timestamp = getNotificationTime(date, startTime);
+                    addReminderButtonToItem(div, { subject: cls.subject, room: cls.room, timestamp: timestamp });
+                    
+                    scheduleContent.appendChild(div);
+                });
+            }
+
+            function getNotificationTime(date, timeStr) {
+                const [h, m] = timeStr.split(':').map(Number);
+                const d = new Date(date);
+                d.setHours(h, m, 0, 0);
+                const offset = parseInt(currentReminderOffset);
+                return d.getTime() - (offset * 60 * 1000);
+            }
+
+            function addReminderButtonToItem(element, data) {
+                const btn = document.createElement('button');
+                btn.className = 'remind-btn';
+                
+                const isScheduled = scheduledNotifications.has(data.timestamp);
+                const isPast = data.timestamp < Date.now();
+
+                if (isPast) {
+                    btn.innerHTML = '<i class="fas fa-history"></i>';
+                    btn.title = "Время прошло";
+                    btn.style.opacity = "0.5";
+                    btn.disabled = true;
+                } else if (isScheduled) {
+                    btn.innerHTML = '<i class="fas fa-check"></i>';
+                    btn.classList.add('active');
+                    btn.title = "Напоминание установлено";
+                    btn.onclick = () => handleNotificationToggle(data.timestamp, false);
+                } else {
+                    btn.innerHTML = '<i class="far fa-bell"></i>';
+                    btn.title = "Установить напоминание";
+                    btn.onclick = () => handleNotificationToggle(data, true);
+                }
+
+                element.appendChild(btn);
+            }
+
+            async function handleNotificationToggle(dataOrId, isAdding) {
+                const userEmail = emailInput.value.trim();
+                
+                if (isAdding) {
+                    if ('serviceWorker' in navigator) {
+                        const perm = await Notification.requestPermission();
+                        if (perm === 'granted') {
+                            navigator.serviceWorker.controller.postMessage({
+                                action: 'scheduleNotification',
+                                title: `Пара: ${dataOrId.subject}`,
+                                body: `Каб: ${dataOrId.room}. Через ${currentReminderOffset} мин.`,
+                                timestamp: dataOrId.timestamp
+                            });
+                        }
+                    }
+
+                    if (userEmail) {
+                        try {
+                            const eventTime = new Date(dataOrId.timestamp + (parseInt(currentReminderOffset) * 60000));
+                            await fetch('/api/send_email', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    to: userEmail,
+                                    subject: `Напоминание: ${dataOrId.subject}`,
+                                    text: `У вас скоро занятие по предмету "${dataOrId.subject}" в кабинете ${dataOrId.room}.\nВремя начала: ${eventTime.toLocaleTimeString()}`,
+                                    sendAt: dataOrId.timestamp 
+                                })
+                            });
+                            console.log('Email request sent');
+                        } catch (e) {
+                            console.error('Email send failed', e);
+                        }
+                    }
+
+                    scheduledNotifications.add(dataOrId.timestamp);
+                } else {
+                    if ('serviceWorker' in navigator) {
+                        navigator.serviceWorker.controller.postMessage({ action: 'cancelNotification', timestamp: dataOrId });
+                    }
+                    scheduledNotifications.delete(dataOrId);
+                }
+                
+                renderScheduleModal(new Date(modalDateTitle.dataset.rawDate));
+            }
+
+            async function initWeather() {
+                const container = document.getElementById('weather-effect');
+                if (!navigator.geolocation) return;
+
+                navigator.geolocation.getCurrentPosition(async (pos) => {
+                    try {
+                        const { latitude, longitude } = pos.coords;
+                        const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`);
+                        const data = await res.json();
+                        const code = data.current_weather.weathercode;
+
+                        container.innerHTML = '';
+                        if ([71, 73, 75, 77, 85, 86].includes(code)) {
+                            for(let i=0; i<30; i++) {
+                                const el = document.createElement('div');
+                                el.className = 'snow-flake';
+                                el.style.left = Math.random()*100 + '%';
+                                el.style.animationDuration = Math.random()*3+2 + 's';
+                                container.appendChild(el);
+                            }
+                        } 
+                        else if ([51,53,55,56,57,61,63,65,66,67,80,81,82].includes(code)) {
+                            for(let i=0; i<50; i++) {
+                                const el = document.createElement('div');
+                                el.className = 'rain-drop';
+                                el.style.left = Math.random()*100 + '%';
+                                el.style.animationDuration = Math.random()*0.5+0.5 + 's';
+                                container.appendChild(el);
+                            }
+                        }
+                    } catch (e) { console.log('Weather error', e); }
+                });
+            }
+
+            document.getElementById('prev-month').addEventListener('click', () => { navDate.setMonth(navDate.getMonth() - 1); renderCalendar(); });
+            document.getElementById('next-month').addEventListener('click', () => { navDate.setMonth(navDate.getMonth() + 1); renderCalendar(); });
+            
+            document.getElementById('settings-toggle').addEventListener('click', (e) => {
+                e.stopPropagation();
+                document.getElementById('settings-panel').classList.toggle('visible');
+            });
+            
+            document.addEventListener('click', (e) => {
+                const panel = document.getElementById('settings-panel');
+                const btn = document.getElementById('settings-toggle');
+                if (!panel.contains(e.target) && !btn.contains(e.target)) {
+                    panel.classList.remove('visible');
+                }
+            });
+
+            document.getElementById('reminder-time').addEventListener('change', (e) => {
+                currentReminderOffset = e.target.value;
+                localStorage.setItem('reminderTime', currentReminderOffset);
+            });
+
+            emailInput.addEventListener('change', (e) => {
+                localStorage.setItem('userEmail', e.target.value);
+            });
+
+            document.getElementById('close-modal').addEventListener('click', closeSchedule);
+            document.getElementById('modal-overlay').addEventListener('click', closeSchedule);
+
+            renderCalendar();
+            initWeather();
+        });
+    </script>
+<script src="assets/js/edutwin-auth.js"></script>
+<script>window.addEventListener('load',()=>EduTwinAuth.setupNavigation());</script>
+</body>
+</html>

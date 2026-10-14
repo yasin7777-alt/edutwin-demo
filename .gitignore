@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+
+# Local Netlify build output
+.netlify/
+
+# Heavy video files (stored externally on CDN/Storage)
+*.mp4
+*.webm
+*.mov
+*.mkv
+
+# Local backups
+videos_backup/
+
+# AI Studio local secrets and generated output
+.env
+.env.*
+!.env.example
+dist/
+

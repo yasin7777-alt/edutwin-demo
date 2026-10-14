@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Тест Gemini API</title>
+</head>
+<body style="font-family: sans-serif; padding: 20px;">
+
+    <h2>Проверка связи с Netlify + Gemini</h2>
+    <button onclick="testAPI()" style="padding: 10px 20px; font-size: 16px; cursor: pointer;">
+        Отправить тестовый запрос
+    </button>
+    
+    <p><strong>Статус:</strong> <span id="status" style="color: blue;">Ожидание нажатия...</span></p>
+    
+    <h3>Ответ от сервера:</h3>
+    <pre id="result" style="background: #f4f4f4; padding: 15px; border: 1px solid #ccc; white-space: pre-wrap; word-wrap: break-word;"></pre>
+
+    <script>
+        async function testAPI() {
+            const statusEl = document.getElementById('status');
+            const resultEl = document.getElementById('result');
+            
+            statusEl.innerText = "Отправка запроса... ждем ответа от ИИ ⏳";
+            statusEl.style.color = "orange";
+            resultEl.innerText = "";
+
+            try {
+                // Обращаемся напрямую к твоей серверной функции
+                const response = await fetch('/.netlify/functions/chat', {
+                    method: 'POST',
+                    body: JSON.stringify({ message: "Привет, Сауле! Это тестовое сообщение. Ответь коротко: связь установлена!" })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    statusEl.innerText = "Успех! Всё работает! 🟢";
+                    statusEl.style.color = "green";
+                    // Выводим весь полученный объект красивым текстом
+                    resultEl.innerText = JSON.stringify(data, null, 2);
+                } else {
+                    statusEl.innerText = "Ошибка от сервера API 🔴";
+                    statusEl.style.color = "red";
+                    resultEl.innerText = JSON.stringify(data, null, 2);
+                }
+            } catch (error) {
+                statusEl.innerText = "Критическая ошибка сети или функции 🔴";
+                statusEl.style.color = "red";
+                resultEl.innerText = "Ошибка: " + error.message;
+            }
+        }
+    </script>
+</body>
+</html>

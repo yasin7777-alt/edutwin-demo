@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Регистрация — SkillChain</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        body {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #8A5CFF, #B892FF);
+        }
+
+        .auth-box {
+            width: 400px;
+            background: white;
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+            text-align: center;
+        }
+
+        .auth-box h2 {
+            margin-bottom: 25px;
+            color: #333;
+        }
+
+        .auth-box input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+        }
+
+        .auth-box button {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            background: #FF8A00;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+
+        .divider {
+            margin: 20px 0;
+            font-size: 13px;
+            color: #888;
+            position: relative;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            width: 35%;
+            height: 1px;
+            background: #ddd;
+        }
+
+        .divider::before { left: 0; }
+        .divider::after { right: 0; }
+
+        .socials {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .socials a {
+            flex: 1;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 10px;
+            text-decoration: none;
+            font-size: 14px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: 0.2s;
+        }
+
+        .socials a:hover {
+            background: #f5f5f5;
+        }
+
+        .back-link {
+            display: block;
+            margin-top: 20px;
+            font-size: 13px;
+            color: #8A5CFF;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="auth-box">
+    <h2>Создать аккаунт</h2>
+
+    <input type="text" placeholder="Имя">
+    <input type="email" placeholder="Email">
+    <input type="password" placeholder="Пароль">
+
+    <button>Зарегистрироваться</button>
+
+    <div class="divider">или войти через</div>
+
+    <div class="socials">
+        <a href="#">
+            <img src="https://cdn-icons-png.flaticon.com/512/300/300221.png" width="18">
+            Google
+        </a>
+        <a href="#">
+            <img src="https://cdn-icons-png.flaticon.com/512/0/747.png" width="18">
+            Apple
+        </a>
+        <a href="#">
+            <img src="https://cdn-icons-png.flaticon.com/512/124/124010.png" width="18">
+            Facebook
+        </a>
+    </div>
+
+    <a class="back-link" href="index.html">← Назад на главную</a>
+</div>
+
+</body>
+</html>

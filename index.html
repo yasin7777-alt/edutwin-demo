@@ -1,0 +1,1829 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduTwin — AI Assistant Saule</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="videos-config.js"></script>
+    <style>
+        /* --- БАЗОВЫЕ СТИЛИ --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #7209b7;
+            --accent: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray-1: #f1f3f5;
+            --gray-2: #e9ecef;
+            --gray-3: #dee2e6;
+            --gray-7: #495057;
+            --success: #4cc9f0;
+            --gradient: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            --card-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            --hover-shadow: 0 20px 40px rgba(67, 97, 238, 0.15);
+        }
+        
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Скрытие бейджика Netlify Drawer (Powered by Netlify) */
+        netlify-drawer,
+        [data-netlify-drawer],
+        iframe[src*="netlify"],
+        div[class*="netlify-drawer"],
+        div[class*="netlify-feedback"],
+        div[id*="netlify-drawer"] {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+
+        /* --- HEADER --- */
+        header {
+            position: fixed; top: 0; width: 100%; padding: 15px 0;
+            background-color: rgba(255, 255, 255, 0.95); z-index: 1000;
+            backdrop-filter: blur(10px); box-shadow: 0 2px 20px rgba(0,0,0,0.05);
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .header-container { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 24px; font-weight: 800; color: var(--primary); text-decoration: none; }
+        .main-nav ul { display: flex; list-style: none; }
+        .main-nav ul li { margin-left: 20px; }
+        .main-nav ul li a { color: var(--gray-7); text-decoration: none; font-weight: 500; transition: 0.3s; }
+        .main-nav ul li a:hover { color: var(--primary); }
+        .btn-nav { padding: 10px 24px; background: var(--gradient); color: white; text-decoration: none; border-radius: 50px; font-weight: 600; box-shadow: 0 5px 15px rgba(67, 97, 238, 0.25); }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            padding-top: 80px;
+        }
+        .hero-background { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+        .hero-background img { width: 100%; height: 100%; object-fit: cover; }
+        .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to right, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.8) 10%, rgba(255,255,255,0.4) 40%); z-index: 0; }
+        .hero-container { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: center; position: relative; z-index: 1; width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .hero-content { animation: fadeIn 1s ease-out forwards; }
+        .hero-badge { display: inline-flex; align-items: center; padding: 8px 16px; background: white; color: var(--primary); border-radius: 30px; font-size: 0.9rem; font-weight: 700; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid rgba(67, 97, 238, 0.1); }
+        .hero h1 { font-size: 3.8rem; margin-bottom: 20px; line-height: 1.1; font-weight: 800; color: var(--dark); }
+        .hero h1 span { background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .hero p { font-size: 1.2rem; margin-bottom: 35px; color: var(--gray-7); line-height: 1.6; max-width: 500px; }
+        .btn { display: inline-flex; align-items: center; justify-content: center; padding: 16px 36px; background: var(--gradient); color: white; text-decoration: none; border-radius: 50px; font-weight: 600; transition: all 0.3s ease; border: none; cursor: pointer; box-shadow: 0 10px 20px rgba(67, 97, 238, 0.3); }
+        .btn:hover { transform: translateY(-3px); }
+        .btn-outline { background: rgba(255,255,255,0.8); color: var(--primary); border: 2px solid var(--primary); box-shadow: none; margin-left: 15px; backdrop-filter: blur(5px); }
+
+        .hero-visual-wrapper { position: relative; height: 500px; display: flex; align-items: center; justify-content: center; }
+        .hero-main-img { width: 100%; max-width: 500px; filter: drop-shadow(0 20px 40px rgba(67, 97, 238, 0.2)); animation: float 6s ease-in-out infinite; z-index: 2; }
+        .floating-info-card { position: absolute; background: rgba(255, 255, 255, 0.95); padding: 15px 20px; border-radius: 16px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 15px; z-index: 3; border: 1px solid rgba(255,255,255,0.8); transition: transform 0.3s ease; }
+        .info-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; }
+        .info-text h4 { font-size: 0.9rem; font-weight: 700; margin: 0; }
+        .info-text p { font-size: 0.75rem; color: var(--gray-7); margin: 0; }
+        .card-1 { top: 10%; left: 150px; animation: float-delayed 5s ease-in-out infinite; }
+        .card-1 .info-icon { background: var(--accent); }
+        .card-2 { bottom: 15%; right: -10px; animation: float 7s ease-in-out infinite 1s; }
+        .card-2 .info-icon { background: var(--primary); }
+
+        /* --- DIRECTIONS SECTION --- */
+        .directions-section { background: white; padding: 100px 0; position: relative; }
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; margin-top: 50px; }
+        .feature-card { 
+            background: var(--gray-1); padding: 40px 30px; border-radius: 24px; transition: 0.3s; 
+            border: 1px solid transparent; position: relative; overflow: hidden; cursor: pointer;
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        .feature-card:hover { background: white; box-shadow: var(--card-shadow); border-color: var(--primary); transform: translateY(-10px); }
+        .feature-icon { 
+            width: 60px; height: 60px; background: white; border-radius: 16px; display: flex; 
+            align-items: center; justify-content: center; font-size: 24px; color: var(--primary); 
+            margin-bottom: 25px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); transition: 0.3s;
+        }
+        .feature-card:hover .feature-icon { transform: scale(1.1) rotate(5deg); background: var(--gradient); color: white; }
+        .feature-card h3 { font-size: 1.25rem; font-weight: 700; margin-bottom: 15px; color: var(--dark); display: flex; align-items: center; justify-content: space-between;}
+        .feature-card h3::after { content: '\f061'; font-family: 'Font Awesome 6 Free'; font-weight: 900; font-size: 0.9rem; opacity: 0; transform: translateX(-10px); transition: 0.3s; color: var(--primary); }
+        .feature-card:hover h3::after { opacity: 1; transform: translateX(0); }
+        .feature-card p { color: var(--gray-7); font-size: 0.95rem; line-height: 1.6; }
+
+        /* Tool Modal Styles */
+        .tool-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1200; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+        .tool-modal.active { display: flex; animation: fadeIn 0.3s; }
+        .tool-modal-content { background: white; width: 90%; max-width: 600px; border-radius: 24px; padding: 30px; position: relative; box-shadow: 0 25px 50px rgba(0,0,0,0.2); }
+        .tool-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--gray-2); padding-bottom: 15px; }
+        .tool-header h3 { font-size: 1.4rem; color: var(--dark); display: flex; align-items: center; gap: 10px; }
+        .tool-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--gray-7); transition: 0.3s; }
+        .tool-close:hover { color: var(--error); transform: rotate(90deg); }
+        .tool-body textarea, .tool-body input { width: 100%; padding: 15px; border: 1px solid var(--gray-3); border-radius: 12px; font-size: 1rem; margin-bottom: 20px; font-family: 'Inter', sans-serif; resize: vertical; min-height: 100px; }
+        .tool-body input { min-height: auto; }
+        .tool-result { background: var(--gray-1); padding: 15px; border-radius: 12px; margin-top: 20px; border-left: 4px solid var(--primary); display: none; max-height: 200px; overflow-y: auto; white-space: pre-wrap; }
+        .tool-actions { display: flex; justify-content: flex-end; gap: 10px; }
+        
+        /* --- LECTURES SECTION --- */
+        .lectures-section { background-color: #fcfcfc; padding: 100px 0; position: relative; z-index: 2; }
+        .section-title { text-align: center; margin-bottom: 50px; }
+        .section-title h2 { font-size: 2.5rem; font-weight: 800; }
+        .section-subtitle { display: block; color: var(--primary); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; font-size: 0.9rem; margin-bottom: 10px; }
+        .lectures-filters { display: flex; justify-content: center; gap: 10px; margin-bottom: 40px; flex-wrap: wrap; }
+        .filter-btn { padding: 8px 24px; background: white; border: 1px solid var(--gray-3); border-radius: 30px; cursor: pointer; font-weight: 500; color: var(--gray-7); transition: all 0.3s; }
+        .filter-btn:hover, .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .lectures-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; }
+        .lecture-card { background: white; border-radius: 20px; overflow: hidden; box-shadow: var(--card-shadow); transition: all 0.4s ease; display: flex; flex-direction: column; cursor: pointer; }
+        .lecture-card:hover { transform: translateY(-10px); box-shadow: var(--hover-shadow); }
+        .lecture-video { height: 180px; background: var(--dark); position: relative; overflow: hidden; }
+        .lecture-video video { width: 100%; height: 100%; object-fit: cover; opacity: 0.9; transition: 0.5s; pointer-events: none; }
+        .lecture-card:hover .lecture-video video { transform: scale(1.05); opacity: 0.7; }
+        .video-badge { position: absolute; top: 15px; left: 15px; padding: 5px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; color: white; z-index: 2; }
+        .play-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; opacity: 0; transition: 0.3s; background: rgba(0,0,0,0.2); z-index: 2; }
+        .lecture-card:hover .play-overlay { opacity: 1; }
+        .play-btn { width: 50px; height: 50px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary); transform: scale(0.8); transition: 0.3s; }
+        .lecture-card:hover .play-btn { transform: scale(1); }
+        .lecture-content { padding: 20px; display: flex; flex-direction: column; flex-grow: 1; }
+        .lecture-content h3 { font-size: 1.1rem; margin-bottom: 10px; font-weight: 700; line-height: 1.4; }
+        .lecture-content p { color: var(--gray-7); font-size: 0.9rem; margin-bottom: 15px; flex-grow: 1; }
+        .lecture-meta { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--gray-7); padding-top: 15px; border-top: 1px solid var(--gray-2); }
+        .duration-chip { font-weight: 600; display: flex; align-items: center; gap: 5px; }
+
+        /* --- PLAYER MODAL (NEW) --- */
+        .player-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 2500; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+        .player-modal.active { display: flex; animation: fadeIn 0.3s; }
+        .player-container { position: relative; width: 90%; max-width: 1000px; }
+        .player-close { position: absolute; top: -50px; right: 0; color: white; font-size: 35px; cursor: pointer; background: none; border: none; transition: 0.3s; opacity: 0.8; }
+        .player-close:hover { color: var(--accent); opacity: 1; transform: scale(1.1); }
+        .player-modal-content { width: 100%; background: #000; border-radius: 16px; overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.5); aspect-ratio: 16/9; }
+        .player-modal-content video { width: 100%; height: 100%; object-fit: contain; outline: none; }
+
+        /* --- DIGITAL TWIN MODAL & BUTTON --- */
+        .btn-twin {
+            background: linear-gradient(135deg, #f72585 0%, #7209b7 100%) !important;
+            color: white !important;
+            box-shadow: 0 10px 25px rgba(247, 37, 133, 0.35) !important;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .btn-twin:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 14px 30px rgba(247, 37, 133, 0.5) !important;
+        }
+        .btn-twin i { font-size: 1.1rem; }
+        .btn-twin::after {
+            content: '';
+            position: absolute;
+            top: -50%; left: -60%;
+            width: 40px; height: 200%;
+            background: rgba(255, 255, 255, 0.25);
+            transform: rotate(30deg);
+            transition: 0.7s;
+        }
+        .btn-twin:hover::after { left: 130%; }
+
+        .twin-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.8);
+            z-index: 2600;
+            align-items: center; justify-content: center;
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            opacity: 0;
+            transition: opacity 0.35s ease;
+        }
+        .twin-modal.active {
+            display: flex;
+            opacity: 1;
+        }
+        .twin-modal-card {
+            background: #ffffff;
+            width: 92%;
+            max-width: 920px;
+            border-radius: 26px;
+            overflow: hidden;
+            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.15);
+            transform: scale(0.92) translateY(25px);
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+        }
+        .twin-modal.active .twin-modal-card {
+            transform: scale(1) translateY(0);
+        }
+        .twin-modal-header {
+            padding: 18px 26px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--gray-2);
+            background: #ffffff;
+        }
+        .twin-modal-title {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .twin-modal-avatar {
+            width: 46px;
+            height: 46px;
+            border-radius: 14px;
+            background: var(--gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+        }
+        .twin-modal-info h3 {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--dark);
+            margin: 0;
+            line-height: 1.2;
+        }
+        .twin-modal-info p {
+            font-size: 0.82rem;
+            color: var(--gray-7);
+            margin: 3px 0 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
+        }
+        .twin-modal-close {
+            background: var(--gray-1);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: var(--gray-7);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .twin-modal-close:hover {
+            background: var(--gray-3);
+            color: var(--dark);
+            transform: rotate(90deg);
+        }
+        .twin-video-container {
+            background: #000000;
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16/9;
+            max-height: 520px;
+        }
+        .twin-video-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            outline: none;
+            display: block;
+        }
+        .twin-modal-footer {
+            padding: 16px 26px;
+            background: var(--gray-1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            border-top: 1px solid var(--gray-2);
+        }
+        .twin-video-selector {
+            display: flex;
+            gap: 8px;
+            background: white;
+            padding: 5px;
+            border-radius: 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .twin-tab-btn {
+            padding: 9px 20px;
+            border: none;
+            background: transparent;
+            border-radius: 30px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--gray-7);
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .twin-tab-btn:hover { color: var(--primary); }
+        .twin-tab-btn.active {
+            background: var(--gradient);
+            color: white;
+            box-shadow: 0 4px 14px rgba(67, 97, 238, 0.28);
+        }
+        .twin-toggle-btn {
+            padding: 10px 22px;
+            background: linear-gradient(135deg, #f72585 0%, #7209b7 100%);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 0.88rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 15px rgba(247, 37, 133, 0.28);
+        }
+        .twin-toggle-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(247, 37, 133, 0.4);
+        }
+
+        /* --- CHAT SECTION --- */
+        .interactive-section {
+            background: var(--dark);
+            color: white;
+            padding: 100px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .chat-wrapper {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            display: flex;
+            height: 650px;
+            border: 1px solid rgba(255,255,255,0.1);
+            position: relative;
+            z-index: 2;
+        }
+        
+        .chat-sidebar {
+            width: 280px;
+            background-color: #f8f9fa;
+            border-right: 1px solid var(--gray-2);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chat-sidebar-header {
+            padding: 25px;
+            border-bottom: 1px solid var(--gray-2);
+        }
+        
+        .new-chat-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--dark);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .new-chat-btn:hover {
+            background: #000;
+            transform: translateY(-2px);
+        }
+        
+        .chat-history {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+        }
+        
+        .chat-history-item {
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--gray-7);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        .chat-history-item:hover {
+            background-color: var(--gray-3);
+            color: var(--dark);
+        }
+        
+        .chat-history-item.active {
+            background-color: white;
+            color: var(--primary);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        
+        .chat-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: white;
+        }
+        
+        .chat-header {
+            padding: 15px 30px;
+            border-bottom: 1px solid var(--gray-2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: white;
+        }
+        
+        .chat-avatar {
+            width: 42px;
+            height: 42px;
+            background: var(--gradient);
+            border-radius: 12px;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+        
+        .chat-header-info h3 {
+            font-size: 1.1rem;
+            margin-bottom: 2px;
+            color: var(--dark);
+        }
+        
+        .chat-header-info p {
+            font-size: 0.8rem;
+            color: var(--success);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .chat-header-info p::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background-color: var(--success);
+            border-radius: 50%;
+            display: block;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            background-color: #fcfcfc;
+        }
+        
+        .message {
+            margin-bottom: 24px;
+            display: flex;
+            flex-direction: column;
+            max-width: 80%;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .message.bot {
+            align-items: flex-start;
+        }
+        
+        .message.user {
+            align-items: flex-end;
+            margin-left: auto;
+        }
+        
+        .message-content {
+            padding: 16px 20px;
+            border-radius: 18px;
+            margin-top: 5px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            position: relative;
+        }
+        
+        .message.bot .message-content {
+            background-color: white;
+            border-top-left-radius: 4px;
+            color: var(--dark);
+            border: 1px solid var(--gray-2);
+        }
+        
+        .message.user .message-content {
+            background: var(--primary);
+            border-top-right-radius: 4px;
+            color: white;
+        }
+        
+        .typing-indicator {
+            display: flex;
+            padding: 15px 20px;
+            background-color: white;
+            border-radius: 18px;
+            margin-top: 5px;
+            margin-left: 0;
+            align-items: center;
+            width: fit-content;
+            display: none;
+            border: 1px solid var(--gray-2);
+            border-top-left-radius: 4px;
+        }
+        
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            background-color: var(--gray-7);
+            border-radius: 50%;
+            margin: 0 3px;
+            animation: typingIndicator 1.5s infinite ease-in-out;
+        }
+
+        @keyframes typingIndicator {
+            0% { opacity: 0.4; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.1); }
+            100% { opacity: 0.4; transform: scale(0.8); }
+        }
+        
+        .chat-input-area {
+            padding: 20px 30px;
+            background-color: white;
+            border-top: 1px solid var(--gray-2);
+        }
+        
+        .tools-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+        
+        .tool-btn {
+            padding: 8px 16px;
+            background-color: white;
+            color: var(--gray-7);
+            border: 1px solid var(--gray-3);
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+        
+        .tool-btn:hover {
+            background: var(--gray-1);
+            border-color: var(--dark);
+            color: var(--dark);
+        }
+        
+        .chat-input-form {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--gray-1);
+            padding: 8px;
+            border-radius: 30px;
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .chat-input-form:focus-within {
+            background: white;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+        
+        .attach-btn {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-7);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+        
+        .attach-btn:hover {
+            background-color: var(--gray-3);
+            color: var(--primary);
+        }
+        
+        .chat-input {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            outline: none;
+            font-size: 1rem;
+            color: var(--dark);
+        }
+        
+        .send-btn {
+            width: 42px;
+            height: 42px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .send-btn:hover {
+            transform: scale(1.05);
+            background: var(--primary-dark);
+        }
+
+        /* Animations */
+        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-15px); } 100% { transform: translateY(0px); } }
+        @keyframes float-delayed { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Mobile */
+        @media (max-width: 992px) {
+            .hero-container { grid-template-columns: 1fr; text-align: center; }
+            .hero-visual-wrapper { display: none; }
+            .btn-outline { margin-left: 0; margin-top: 10px; display: block; width: 100%; }
+            .main-nav { display: none; }
+            .chat-wrapper { flex-direction: column; height: 800px; }
+            .chat-sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--gray-2); }
+            .chat-history { display: flex; overflow-x: auto; padding: 10px; white-space: nowrap; }
+            .chat-history-item { flex: 0 0 auto; width: 150px; margin-bottom: 0; margin-right: 10px; }
+            .player-close { top: -40px; right: 10px; }
+        }
+
+        .mobile-menu-btn { display: none; background: none; border: none; font-size: 24px; cursor: pointer; }
+        @media (max-width: 992px) { .mobile-menu-btn { display: block; } }
+        .mobile-nav { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; display: flex; flex-direction: column; align-items: center; justify-content: center; transform: translateY(-100%); transition: 0.3s; z-index: 1002; }
+        .mobile-nav.active { transform: translateY(0); }
+        .mobile-nav a { font-size: 1.5rem; color: var(--dark); text-decoration: none; margin: 15px 0; }
+
+        /* Add Video */
+        .add-video-btn { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; background: var(--dark); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 10px 20px rgba(0,0,0,0.2); z-index: 900; }
+        .video-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1100; align-items: center; justify-content: center; }
+        .video-modal.active { display: flex; }
+        .video-modal-content { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 500px; }
+        .video-form-group { margin-bottom: 15px; }
+        .video-form-group input, .video-form-group select, .video-form-group textarea { width: 100%; padding: 10px; border: 1px solid var(--gray-3); border-radius: 8px; }
+
+        /* --- FOOTER STYLES --- */
+        footer { background-color: var(--dark); color: white; padding: 70px 0 30px; margin-top: 50px; }
+        .footer-content { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; margin-bottom: 40px; }
+        .footer-column h3 { font-size: 1.2rem; margin-bottom: 20px; color: white; font-weight: 700; }
+        .footer-column ul { list-style: none; padding: 0; }
+        .footer-column ul li { margin-bottom: 12px; }
+        .footer-column ul li a { color: rgba(255,255,255,0.7); text-decoration: none; transition: 0.3s; font-size: 0.95rem; }
+        .footer-column ul li a:hover { color: white; }
+        .copyright { text-align: center; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); font-size: 0.9rem; }
+            a.feature-card { text-decoration: none; color: inherit; display: block; }
+        a.feature-card:focus-visible { outline: 3px solid var(--primary); outline-offset: 4px; }
+        @media (max-width: 1120px) { .main-nav { display:none; } .mobile-menu-btn { display:block; } }
+    </style>
+    <script src="assets/js/edutwin-auth.js"></script>
+</head>
+<body>
+
+    <header id="header">
+        <div class="container header-container">
+            <a href="index.html" class="logo">EduTwin<span class="logo-dot"></span></a>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="schedule.html">Расписание</a></li>
+                    <li><a href="rabota.html">Студенты</a></li>
+                    <li><a href="#lectures">Лекции</a></li>
+                    <li><a href="#interactive">AI Ассистент</a></li>
+                    <li><a href="Skillchain/index.html">SkillChain</a></li>
+                    <li><a href="materials.html">Материалы</a></li><li><a href="ai-studio.html">AI Studio</a></li>
+                    <li><a href="survey.html">Опрос</a></li>
+                </ul>
+            </nav>
+            <div class="nav-actions">
+                 <a href="account.html" class="btn-nav">Войти</a>
+            </div>
+            <button class="mobile-menu-btn"><i class="fas fa-bars"></i></button>
+        </div>
+    </header>
+    
+    <div class="mobile-nav">
+        <a href="schedule.html">Расписание</a>
+        <a href="rabota.html">Работы студентов</a>
+        <a href="#lectures">Лекции</a>
+        <a href="#interactive">Чат-бот</a>
+        <a href="Skillchain/index.html">SkillChain</a>
+        <a href="materials.html">Материалы</a><a href="ai-studio.html">AI Studio</a>
+        <a href="survey.html">Опрос</a>
+        <a href="register.html">Регистрация</a>
+    </div>
+
+    <!-- HERO SECTION WITH IMAGE -->
+    <section class="hero">
+        <div class="hero-background">
+            <img src="bg.jpeg" alt="Education Background">
+        </div>
+        <div class="hero-overlay"></div>
+        
+        <div class="hero-container">
+            <div class="hero-content">
+                <div class="hero-badge"><i class="fas fa-star"></i> Education 2.0</div>
+                <h1>Ваш персональный <br><span>Цифровой Двойник</span></h1>
+                <p>EduTwin трансформирует обучение. AI-аватары, эксклюзивные лекции и мгновенная помощь Saule AI в одном месте.</p>
+                <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:center;">
+                    <button type="button" class="btn btn-twin" onclick="openTwinModal(0)">
+                        <i class="fas fa-sparkles"></i> Цифровой двойник
+                    </button>
+                    <a href="#lectures" class="btn"><i class="fas fa-play-circle" style="margin-right:8px"></i> Лекции</a>
+                    <a href="#interactive" class="btn btn-outline" style="margin-left:0;">Чат AI</a>
+                </div>
+            </div>
+            
+            <div class="hero-visual-wrapper">
+                <div class="floating-info-card card-1" onclick="openTwinModal(0)" style="cursor: pointer;" title="Нажмите, чтобы увидеть цифрового двойника">
+                    <div class="info-icon"><i class="fas fa-robot"></i></div>
+                    <div class="info-text">
+                        <h4>AI Анализ</h4>
+                        <p>Мгновенная оценка</p>
+                    </div>
+                </div>
+                <div class="floating-info-card card-2">
+                    <div class="info-icon"><i class="fas fa-infinity"></i></div>
+                    <div class="info-text">
+                        <h4>Доступ 24/7</h4>
+                        <p>Учись в своем темпе</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- NEW SECTION: DIRECTIONS FOR AI PROJECTS -->
+    <section id="directions" class="directions-section">
+        <div class="container">
+            <div class="section-title">
+                <span class="section-subtitle">О конкурсе</span>
+                <h2>Направления проекта</h2>
+                <p style="max-width: 600px; margin: 15px auto; color: var(--gray-7);">Для конкурса проектов в области искусственного интеллекта (Образование):</p>
+            </div>
+            
+            <div class="features-grid">
+                <!-- Карточка 1: Генерация материалов (Открывает Модал) -->
+                <div class="feature-card" onclick="openTool('materials')">
+                    <div class="feature-icon"><i class="fas fa-book-open"></i></div>
+                    <h3>Генерация материалов</h3>
+                    <p>Интеллектуальная система создания и адаптации учебных пособий, лекций и практических заданий под нужды студентов.</p>
+                </div>
+
+                <!-- Карточка 2: Автоматизация расписания (Ссылка на schedule.html) -->
+                <div class="feature-card" onclick="window.location.href='schedule.html'">
+                    <div class="feature-icon"><i class="far fa-calendar-alt"></i></div>
+                    <h3>Автоматизация расписания</h3>
+                    <p>Умный алгоритм для составления оптимального расписания занятий с учетом загруженности аудиторий и преподавателей.</p>
+                </div>
+
+                <!-- Карточка 3: Помощь преподавателям (Открывает Модал) -->
+                <div class="feature-card" onclick="openTool('teacher')">
+                    <div class="feature-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+                    <h3>Помощь преподавателям</h3>
+                    <p>Вспомогательная система для автоматической проверки работ, подготовки тестов и анализа успеваемости.</p>
+                </div>
+                <a class="feature-card" href="ai-studio.html?tool=presentation">
+                    <div class="feature-icon"><i class="fas fa-desktop" aria-hidden="true"></i></div>
+                    <h3>AI Презентации</h3><p>Создавайте оформленные слайды по описанию, редактируйте текст и показывайте презентацию прямо на сайте.</p>
+                </a>
+                <a class="feature-card" href="ai-studio.html?tool=website">
+                    <div class="feature-icon"><i class="fas fa-code" aria-hidden="true"></i></div>
+                    <h3>AI Сайты</h3><p>Опишите сайт, посмотрите живой результат и доработайте его следующей инструкцией.</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+<section id="ai-testing" class="directions-section" style="background-color: var(--gray-1);">
+        <div class="container">
+            <div class="section-title">
+                <span class="section-subtitle">AI-Наставник</span>
+                <h2>Умное тестирование</h2>
+                <p style="max-width: 600px; margin: 15px auto; color: var(--gray-7);">
+                    Сгенерируйте уникальный тест, пройдите его и получите персональный разбор ошибок от Saule AI.
+                </p>
+            </div>
+
+            <div id="test-setup" class="feature-card" style="max-width: 600px; margin: 0 auto; text-align: center; border-color: var(--primary);">
+                            <h3 style="justify-content: center; margin-bottom: 25px;">Настройка теста</h3>
+                            
+                            <input type="text" id="test-subject" list="subject-hints" placeholder="Введите предмет (например: Биология)" style="width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 12px; border: 1px solid var(--gray-3); font-size: 1rem;">
+                            <datalist id="subject-hints">
+                                <option value="Веб-дизайн и UI/UX">
+                                <option value="Основы JavaScript">
+                                <option value="История Казахстана">
+                            </datalist>
+
+                            <div style="display: flex; gap: 15px; margin-bottom: 25px;">
+                                <select id="test-difficulty" style="flex: 1; padding: 15px; border-radius: 12px; border: 1px solid var(--gray-3); font-size: 1rem;">
+                                    <option value="Легкий">Легкий</option>
+                                    <option value="Средний">Средний</option>
+                                    <option value="Сложный">Сложный</option>
+                                </select>
+
+                                <select id="test-count" style="flex: 1; padding: 15px; border-radius: 12px; border: 1px solid var(--gray-3); font-size: 1rem;">
+                                    <option value="3">3 вопроса (Демо)</option>
+                                    <option value="5">5 вопросов</option>
+                                    <option value="10">10 вопросов</option>
+                                </select>
+                            </div>
+
+                            <button id="btn-generate-test" class="btn" style="width: 100%;">Создать тест <i class="fas fa-magic" style="margin-left: 8px;"></i></button>
+             </div>
+
+            <div id="test-container" style="display: none; max-width: 800px; margin: 0 auto; background: white; padding: 40px; border-radius: 24px; box-shadow: var(--card-shadow);">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--gray-2); padding-bottom: 15px; margin-bottom: 25px;">
+                    <h3 id="test-title" style="margin: 0;">Тест</h3>
+                    <span class="duration-chip" style="background: var(--gray-2); padding: 5px 15px; border-radius: 20px;"><i class="fas fa-robot text-primary"></i> AI Generated</span>
+                </div>
+                <div id="test-questions"></div>
+                <button id="btn-submit-test" class="btn" style="margin-top: 30px; width: 100%;">Завершить и проверить</button>
+            </div>
+
+            <div id="test-results" style="display: none; max-width: 800px; margin: 0 auto; background: white; padding: 40px; border-radius: 24px; box-shadow: var(--hover-shadow); border-top: 6px solid var(--primary);">
+                <h3 style="text-align: center; color: var(--gray-7);">Ваш результат</h3>
+                <h2 id="score-display" style="text-align: center; color: var(--primary); font-size: 3.5rem; font-weight: 800; margin: 10px 0 30px;">0/0</h2>
+                
+                <h4 style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px;"><i class="fas fa-user-graduate" style="color: var(--accent);"></i> Разбор от Saule AI:</h4>
+                <div id="ai-recommendations" style="background: var(--gray-1); padding: 25px; border-radius: 16px; line-height: 1.6; font-size: 0.95rem;">
+                    </div>
+                <button onclick="location.reload()" class="btn btn-outline" style="margin-top: 25px; width: 100%; display: block; text-align: center;">Пройти новый тест</button>
+            </div>
+
+            <div class="teacher-dashboard" style="margin-top: 80px; padding-top: 60px; border-top: 2px dashed var(--gray-3);">
+                <div class="section-title">
+                    <span class="section-subtitle">Кабинет преподавателя</span>
+                    <h2>Аналитика успеваемости</h2>
+                    <p style="color: var(--gray-7);">Демонстрация сбора данных (MVP)</p>
+                </div>
+                <div class="features-grid" style="margin-top: 30px;">
+                    <div class="feature-card" style="text-align: center; padding: 30px;">
+                        <h1 style="color: var(--success); font-size: 3rem; margin-bottom: 10px;">85%</h1>
+                        <p style="font-weight: 600;">Средний балл группы</p>
+                    </div>
+                    <div class="feature-card" style="text-align: center; padding: 30px; border: 1px solid rgba(247, 37, 133, 0.2);">
+                        <h1 style="color: var(--accent); font-size: 2rem; margin-bottom: 10px;">JavaScript</h1>
+                        <p style="font-weight: 600;">Проблемная тема недели</p>
+                    </div>
+                    <div class="feature-card" style="text-align: center; padding: 30px;">
+                        <h1 style="color: var(--primary); font-size: 3rem; margin-bottom: 10px;">24</h1>
+                        <p style="font-weight: 600;">Сгенерировано тестов</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TOOL MODAL (Generic) -->
+    <div class="tool-modal" id="tool-modal">
+        <div class="tool-modal-content">
+            <div class="tool-header">
+                <h3 id="tool-title"><i class="fas fa-robot"></i> AI Tool</h3>
+                <button class="tool-close" onclick="closeTool()">&times;</button>
+            </div>
+            <div class="tool-body">
+                <p id="tool-desc" style="margin-bottom: 15px; color: var(--gray-7);">Описание инструмента</p>
+                <input type="text" id="tool-input-short" placeholder="Тема или заголовок" style="display:none;">
+                <textarea id="tool-input-long" placeholder="Введите текст здесь..."></textarea>
+                
+                <div class="tool-actions">
+                    <button class="btn btn-outline" onclick="closeTool()" style="padding: 10px 20px; font-size: 0.9rem;">Закрыть</button>
+                    <button class="btn" id="tool-action-btn" onclick="runToolAction()">
+                        <span id="btn-text">Сгенерировать</span>
+                        <i class="fas fa-magic" style="margin-left: 8px;"></i>
+                    </button>
+                </div>
+
+                <div id="tool-result" class="tool-result"></div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- LECTURES SECTION -->
+    <section id="lectures" class="lectures-section">
+        <div class="container">
+            <div class="section-title">
+                <span class="section-subtitle">База знаний</span>
+                <h2>Мини-лекции</h2>
+            </div>
+
+            <div class="lectures-filters">
+                <button class="filter-btn active" data-filter="all">Все</button>
+                <button class="filter-btn" data-filter="design">Дизайн</button>
+                <button class="filter-btn" data-filter="code">IT / Code</button>
+                <button class="filter-btn" data-filter="ai">AI Tools</button>
+            </div>
+
+            <div id="lectures-grid" class="lectures-grid"></div>
+        </div>
+    </section>
+
+    <!-- FULLSCREEN PLAYER MODAL (NEW) -->
+    <div class="player-modal" id="player-modal">
+        <div class="player-container">
+            <button class="player-close" onclick="closePlayer()" title="Закрыть"><i class="fas fa-times"></i></button>
+            <div class="player-modal-content">
+                <video id="main-player" controls preload="metadata">
+                    Ваш браузер не поддерживает видео.
+                </video>
+            </div>
+        </div>
+    </div>
+
+    <!-- DIGITAL TWIN MODAL (NEW) -->
+    <div class="twin-modal" id="twin-modal" onclick="handleTwinBackdropClick(event)">
+        <div class="twin-modal-card">
+            <div class="twin-modal-header">
+                <div class="twin-modal-title">
+                    <div class="twin-modal-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="twin-modal-info">
+                        <h3>Цифровой двойник EduTwin • Saule AI</h3>
+                        <p><span class="live-dot" style="display:inline-block;width:8px;height:8px;background:#10b981;border-radius:50%;"></span> <span id="twin-modal-status">Видео 1: Обращение к жюри</span></p>
+                    </div>
+                </div>
+                <button class="twin-modal-close" onclick="closeTwinModal()" title="Закрыть">&times;</button>
+            </div>
+            
+            <div class="twin-video-container">
+                <video id="twin-player" controls preload="metadata" playsinline>
+                    <source id="twin-video-source" src="" type="video/mp4">
+                    Ваш браузер не поддерживает воспроизведение видео.
+                </video>
+            </div>
+
+            <div class="twin-modal-footer">
+                <div class="twin-video-selector">
+                    <button class="twin-tab-btn active" id="twin-tab-0" onclick="switchTwinVideo(0)">
+                        <i class="fas fa-play-circle"></i> 1. Приветствие
+                    </button>
+                    <button class="twin-tab-btn" id="twin-tab-1" onclick="switchTwinVideo(1)">
+                        <i class="fas fa-play-circle"></i> 2. Демонстрация
+                    </button>
+                </div>
+                <button class="twin-toggle-btn" id="twin-toggle-btn" onclick="toggleTwinVideo()">
+                    <span>К видео 2 (Лекция)</span> <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="add-video-btn" id="add-video-btn"><i class="fas fa-plus"></i></div>
+
+    <!-- Video Modal -->
+    <div class="video-modal" id="video-modal">
+        <div class="video-modal-content">
+            <h3 style="text-align:center; margin-bottom:20px;">Добавить видео</h3>
+            <form id="video-form">
+                <div class="video-form-group">
+                    <label>Название</label>
+                    <input type="text" id="video-title" required>
+                </div>
+                <div class="video-form-group">
+                    <label>Категория</label>
+                    <select id="video-category">
+                        <option value="design">Дизайн</option>
+                        <option value="code">IT / Code</option>
+                        <option value="ai">AI Tools</option>
+                        <option value="other">Разное</option>
+                    </select>
+                </div>
+                <div class="video-form-group">
+                    <label>Описание</label>
+                    <textarea id="video-description" rows="2"></textarea>
+                </div>
+                <div class="video-form-group">
+                    <label>Длительность (мин)</label>
+                    <input type="text" id="video-duration" required>
+                </div>
+                <div class="video-form-group">
+                    <label>Ссылка на видео (URL)</label>
+                    <input type="url" id="video-url" placeholder="https://... (прямая ссылка на .mp4 или видео)" required style="width: 100%; padding: 12px; border: 1px solid var(--gray-3); border-radius: 8px; font-size: 0.95rem;">
+                    <small style="color: var(--gray-7); font-size: 0.8rem; display: block; margin-top: 4px;">Укажите постоянную прямую ссылку на видео в облаке, CDN или Supabase</small>
+                </div>
+                <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                    <button type="button" id="cancel-video" style="padding:8px 20px; border:none; background:#eee; border-radius:8px; cursor:pointer;">Отмена</button>
+                    <button type="submit" style="padding:8px 20px; border:none; background:var(--primary); color:white; border-radius:8px; cursor:pointer;">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- CHAT SECTION RESTORED -->
+    <section id="interactive" class="interactive-section">
+        <div class="container">
+            <div class="section-title">
+                <span class="section-subtitle">Интерактив</span>
+                <h2 style="color:white;">Saule AI Assistant</h2>
+            </div>
+            <div class="chat-wrapper">
+                <div class="chat-sidebar">
+                    <div class="chat-sidebar-header">
+                        <button id="new-chat-btn" class="new-chat-btn">
+                            <i class="fas fa-plus"></i> Новый диалог
+                        </button>
+                    </div>
+                    <div id="chat-history" class="chat-history">
+                        <div class="chat-history-item active">
+                            <span>Текущий диалог</span>
+                            <i class="fas fa-chevron-right" style="font-size: 0.8rem;"></i>
+                        </div>
+                        <div class="chat-history-item">
+                            <span>Помощь с Figma</span>
+                            <i class="far fa-clock" style="font-size: 0.8rem;"></i>
+                        </div>
+                         <div class="chat-history-item">
+                            <span>Код React</span>
+                            <i class="far fa-clock" style="font-size: 0.8rem;"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chat-main">
+                    <div class="chat-header">
+                        <div style="display:flex; align-items:center;">
+                            <div class="chat-avatar">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div class="chat-header-info">
+                                <h3>Saule AI</h3>
+                                <p>Онлайн</p>
+                            </div>
+                        </div>
+                        <button style="background:none; border:none; color:#aaa; cursor:pointer;"><i class="fas fa-ellipsis-v"></i></button>
+                    </div>
+                    
+                    <div id="chat-messages" class="chat-messages">
+                        <div class="message bot">
+                            <div class="message-content">Здравствуйте! Я ваш виртуальный преподаватель. Готова проверить ваше эссе, объяснить сложную тему или помочь с кодом.</div>
+                        </div>
+                    </div>
+                    
+                    <div id="typing-indicator" class="typing-indicator">
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                    </div>
+                    
+                    <div class="chat-input-area" style="position: relative;">
+                    <div class="tools-row">
+                        <button class="tool-btn" id="btn-shorten"><i class="fas fa-file-alt"></i> Сократить</button>
+                        <button class="tool-btn" id="btn-explain"><i class="fas fa-lightbulb"></i> Объяснить</button>
+                        <button class="tool-btn" id="btn-check"><i class="fas fa-spell-check"></i> Проверить</button>
+                    </div>
+                    
+                    <div id="image-preview-container" style="display: none; padding-bottom: 10px; position: relative;">
+                        <img id="preview-img" src="" style="max-height: 60px; border-radius: 8px; border: 1px solid var(--gray-3);">
+                        <button type="button" onclick="clearImage()" style="position: absolute; top: -5px; left: 50px; background: #ff4757; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; font-size: 12px;">&times;</button>
+                    </div>
+
+                    <form id="chat-form" class="chat-input-form">
+                        <input type="file" id="chat-image-input" accept="image/*" style="display: none;">
+                        
+                        <button type="button" class="attach-btn" onclick="document.getElementById('chat-image-input').click()">
+                            <i class="fas fa-paperclip"></i>
+                        </button>
+                        <input type="text" id="user-input" placeholder="Напишите сообщение..." class="chat-input" autocomplete="off">
+                        <button type="submit" id="send-btn" class="send-btn">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DISQUS -->
+    <section id="comments" style="background-color: white; padding: 80px 0;">
+        <div class="container">
+            <div class="section-title">
+                <h2>Комментарии</h2>
+            </div>
+            <div id="disqus_thread"></div>
+            <script>
+                (function() { 
+                var d = document, s = d.createElement('script');
+                s.src = 'https://sauleserikovna.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+                })();
+            </script>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>EduTwin</h3>
+                    <ul>
+                        <li><a href="#directions">О платформе</a></li>
+                        <li><a href="#twin-modal" onclick="openTwinModal(0); return false;">Цифровой Двойник</a></li>
+                        <li><a href="materials.html">Материалы</a></li><li><a href="ai-studio.html">AI Studio</a></li>
+                        <li><a href="survey.html">Опрос студентов</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Обучение</h3>
+                    <ul>
+                        <li><a href="#lectures">Мини-лекции</a></li>
+                        <li><a href="rabota.html">Работы студентов</a></li>
+                        <li><a href="#ai-testing">Умное тестирование</a></li>
+                        <li><a href="#interactive">Saule AI Ассистент</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Сервисы</h3>
+                    <ul>
+                        <li><a href="schedule.html">Расписание</a></li>
+                        <li><a href="Skillchain/index.html">SkillChain</a></li>
+                        <li><a href="account.html">Личный кабинет</a></li>
+                        <li><a href="#directions" onclick="alert('Раздел тарифов в разработке. Доступ ко всем функциям платформы сейчас бесплатный!'); return false;">Тарифы</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Контакты</h3>
+                    <ul>
+                        <li><a href="mailto:Bakdaulet.agabi.dima@gmail.com"><i class="fas fa-envelope" style="margin-right: 6px;"></i> Bakdaulet.agabi.dima@gmail.com</a></li>
+                        <li><a href="tel:+77771234567"><i class="fas fa-phone-alt" style="margin-right: 6px;"></i> +7 (777) 123-45-67</a></li>
+                        <li><span style="color: var(--gray-7);"><i class="fas fa-map-marker-alt" style="margin-right: 6px;"></i> Казахстан, Алматы</span></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>© 2025 EduTwin. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // GLOBAL FUNCTIONS FOR TOOLS
+        let currentToolType = '';
+
+        function openTool(type) {
+            currentToolType = type;
+            const modal = document.getElementById('tool-modal');
+            const title = document.getElementById('tool-title');
+            const desc = document.getElementById('tool-desc');
+            const inputShort = document.getElementById('tool-input-short');
+            const inputLong = document.getElementById('tool-input-long');
+            const result = document.getElementById('tool-result');
+
+            // Reset UI
+            modal.classList.add('active');
+            result.style.display = 'none';
+            result.innerText = '';
+            inputShort.value = '';
+            inputLong.value = '';
+            
+            if (type === 'materials') {
+                title.innerHTML = '<i class="fas fa-book-open"></i> Генерация материалов';
+                desc.innerText = 'Введите тему урока, и AI создаст краткий план лекции и основные тезисы.';
+                inputShort.style.display = 'block';
+                inputShort.placeholder = 'Например: Основы UX дизайна';
+                inputLong.style.display = 'none';
+            } else if (type === 'teacher') {
+                title.innerHTML = '<i class="fas fa-chalkboard-teacher"></i> Помощь преподавателю';
+                desc.innerText = 'Вставьте текст работы студента для проверки или тему для создания теста.';
+                inputShort.style.display = 'none';
+                inputLong.style.display = 'block';
+                inputLong.placeholder = 'Вставьте текст эссе или задания здесь...';
+            }
+        }
+
+        function closeTool() {
+            document.getElementById('tool-modal').classList.remove('active');
+        }
+
+        // --- ФУНКЦИИ ДЛЯ ГЛАВНОГО ВИДЕОПЛЕЕРА ---
+        function openPlayer(videoSrc) {
+            const playerModal = document.getElementById('player-modal');
+            const mainPlayer = document.getElementById('main-player');
+            mainPlayer.src = typeof getVideoUrl === 'function' ? getVideoUrl(videoSrc) : videoSrc;
+            playerModal.classList.add('active');
+            mainPlayer.play().catch(e => console.error("Playback failed:", e));
+        }
+
+        function closePlayer() {
+            const playerModal = document.getElementById('player-modal');
+            const mainPlayer = document.getElementById('main-player');
+            playerModal.classList.remove('active');
+            mainPlayer.pause();
+            mainPlayer.src = ''; // Очищаем источник
+        }
+
+        // Закрытие плеера при клике на фон вокруг
+        document.getElementById('player-modal').addEventListener('click', function(e) {
+            if (e.target === this || e.target.classList.contains('player-container')) {
+                closePlayer();
+            }
+        });
+
+        // --- ФУНКЦИИ ДЛЯ ЦИФРОВОГО ДВОЙНИКА ---
+        const twinVideoData = [
+            {
+                id: 1,
+                title: "Видео 1: Обращение цифрового двойника к жюри",
+                status: "Видео 1: Приветствие",
+                src: "twin_1.mp4"
+            },
+            {
+                id: 2,
+                title: "Видео 2: Демонстрация лекции и возможностей",
+                status: "Видео 2: Демонстрация",
+                src: "twin_2.mp4"
+            }
+        ];
+        let currentTwinIndex = 0;
+
+        function openTwinModal(index = 0) {
+            const modal = document.getElementById('twin-modal');
+            if (!modal) return;
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            switchTwinVideo(index, true);
+        }
+
+        function closeTwinModal() {
+            const modal = document.getElementById('twin-modal');
+            const player = document.getElementById('twin-player');
+            if (player) {
+                player.pause();
+            }
+            if (modal) {
+                modal.classList.remove('active');
+            }
+            document.body.style.overflow = '';
+        }
+
+        function handleTwinBackdropClick(e) {
+            if (e.target.id === 'twin-modal') {
+                closeTwinModal();
+            }
+        }
+
+        function switchTwinVideo(index, autoPlay = true) {
+            currentTwinIndex = index;
+            const player = document.getElementById('twin-player');
+            const status = document.getElementById('twin-modal-status');
+            const toggleBtn = document.getElementById('twin-toggle-btn');
+            const data = twinVideoData[index];
+
+            document.querySelectorAll('.twin-tab-btn').forEach((btn, idx) => {
+                btn.classList.toggle('active', idx === index);
+            });
+
+            if (status) status.textContent = data.title;
+            if (toggleBtn) {
+                if (index === 0) {
+                    toggleBtn.innerHTML = '<span>К видео 2 (Лекция)</span> <i class="fas fa-arrow-right"></i>';
+                } else {
+                    toggleBtn.innerHTML = '<i class="fas fa-arrow-left"></i> <span>К видео 1 (Приветствие)</span>';
+                }
+            }
+
+            if (player) {
+                player.pause();
+                player.src = typeof getVideoUrl === 'function' ? getVideoUrl(data.src) : data.src;
+                player.load();
+                if (autoPlay) {
+                    player.play().catch(e => console.log('Autoplay prevented:', e));
+                }
+            }
+        }
+
+        function toggleTwinVideo() {
+            const nextIndex = currentTwinIndex === 0 ? 1 : 0;
+            switchTwinVideo(nextIndex, true);
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeTwinModal();
+            }
+        });
+
+        // --- НАДЕЖНЫЙ ВЫЗОВ ИИ ЧЕРЕЗ ЗАЩИЩЕННЫЙ БЭКЕНД (БЕЗ УТЕЧКИ КЛЮЧЕЙ) ---
+        async function fetchGeminiResponse(userText, imageBase64) {
+            const payload = {
+                message: userText,
+                image: imageBase64 || null
+            };
+
+            // Умный выбор шлюза:
+            // Если на основном домене — используем локальный /api/chat.
+            // Если на превью или локальном файле — сразу обращаемся к надежному защищенному шлюзу, избегая 404 в консоли.
+            const endpoints = ['/api/chat'];
+
+            for (const endpoint of endpoints) {
+                try {
+                    const response = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
+                            return data.candidates[0].content.parts[0].text;
+                        }
+                    }
+                } catch (err) {
+                    // Переход к следующему шлюзу
+                }
+            }
+
+            return "Извините, сейчас я не могу ответить. Попробуйте позже.";
+        }
+
+        async function runToolAction() {
+            const btn = document.getElementById('tool-action-btn');
+            const resultDiv = document.getElementById('tool-result');
+            const inputShort = document.getElementById('tool-input-short').value;
+            const inputLong = document.getElementById('tool-input-long').value;
+            let prompt = '';
+
+            if (currentToolType === 'materials') {
+                if (!inputShort) return alert('Введите тему!');
+                prompt = `Ты профессиональный методист. Составь краткий план урока и 3 ключевых тезиса по теме: "${inputShort}". Формат: HTML (используй <b>, <ul>, <li>). Язык: Русский.`;
+            } else if (currentToolType === 'teacher') {
+                if (!inputLong) return alert('Введите текст!');
+                prompt = `Ты преподаватель. Проверь этот текст на ошибки и дай краткую оценку (что хорошо, что улучшить): "${inputLong}". Если это просто тема, составь 3 вопроса для теста. Формат: HTML. Язык: Русский.`;
+            }
+
+            // UI Loading State
+            btn.disabled = true;
+            btn.innerHTML = 'Думаю... <i class="fas fa-spinner fa-spin"></i>';
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = 'Генерация ответа...';
+
+            try {
+                const text = await fetchGeminiResponse(prompt, null);
+                if (!text || text.includes('Извините, сейчас я не могу ответить')) {
+                    throw new Error('Ошибка генерации');
+                }
+                const cleanText = text.replace(/```html/g, '').replace(/```/g, '');
+                resultDiv.innerHTML = cleanText;
+            } catch (error) {
+                console.error(error);
+                resultDiv.innerText = 'Ошибка при генерации. Попробуйте позже.';
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Сгенерировать <i class="fas fa-magic"></i>';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Единая демонстрационная сессия для главного сайта и кабинета.
+            EduTwinAuth.setupNavigation();
+            
+            // --- LOGIC FOR VIDEOS ---
+            const lecturesGrid = document.getElementById('lectures-grid');
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            
+            const categoryInfo = {
+                'design': { color: '#f72585', label: 'Design' },
+                'code': { color: '#4361ee', label: 'Code' },
+                'ai': { color: '#7209b7', label: 'AI' },
+                'other': { color: '#4cc9f0', label: 'Intro' }
+            };
+
+            // FULL LIST OF 12 VIDEOS (PRESERVED)
+            const defaultVideos = [
+                { id: 1, title: "Изометрические Изображения", category: "design", description: "Построение изометрии.", duration: "5:30", src: "video5391264501532229055.mp4" },
+                { id: 2, title: "Figma Уроки с нуля", category: "design", description: "Базовый интерфейс.", duration: "3:10", src: "VID_20250922_114853_374.mp4" },
+                { id: 3, title: "Логотип в Illustrator", category: "design", description: "Векторная графика.", duration: "2:15", src: "202509221130.mp4" },
+                { id: 4, title: "Удаление фона", category: "design", description: "Быстрые методы.", duration: "2:30", src: "document_5371043202797174678.mp4" },
+                { id: 5, title: "Эскиз по фотографии", category: "design", description: "Трейсинг фото.", duration: "4:20", src: "video5391264501532229054.mp4" },
+                { id: 6, title: "Введение в курс", category: "other", description: "Как пользоваться платформой.", duration: "1:00", src: "clideo_editor_11ca86f0156244c5b492a8a3817c4d3c.mp4" },
+                { id: 7, title: "Illustrator: Шаблоны", category: "design", description: "Рисуем по шаблону.", duration: "3:26", src: "video5384122778372833779.mp4" },
+                { id: 8, title: "ИИ и логотипы", category: "ai", description: "Генерация идей.", duration: "4:33", src: "video5384122778372833788.mp4" },
+                { id: 9, title: "Создание WEB страницы", category: "code", description: "HTML/CSS основы.", duration: "0:50", src: "video5381870978559147759.mp4" },
+                { id: 10, title: "Советы по VS Code", category: "code", description: "Плагины и трюки.", duration: "3:50", src: "video5381870978559147681.mp4" },
+                { id: 11, title: "Современный логотип", category: "design", description: "Тренды 2025.", duration: "1:26", src: "video5393516301345915508.mp4" },
+                { id: 12, title: "Урок через песню", category: "other", description: "Музыкальное обучение.", duration: "0:36", src: "video5393516301345915505.mp4" }
+            ];
+
+            let rawStoredVideos = null;
+            try {
+                rawStoredVideos = JSON.parse(localStorage.getItem('edutwin-videos'));
+            } catch(e) {}
+
+            let videos = [];
+            if (Array.isArray(rawStoredVideos)) {
+                // Автоматически отфильтровываем временные невалидные blob: URL, созданные ранее в браузере
+                videos = rawStoredVideos.filter(v => v && v.src && !v.src.startsWith('blob:'));
+                if (videos.length === 0) {
+                    videos = [...defaultVideos];
+                }
+            } else {
+                videos = [...defaultVideos];
+            }
+            localStorage.setItem('edutwin-videos', JSON.stringify(videos));
+
+            function renderVideos(filter = 'all') {
+                lecturesGrid.innerHTML = '';
+                const filtered = filter === 'all' ? videos : videos.filter(v => v.category === filter);
+
+                filtered.forEach((video, index) => {
+                    const info = categoryInfo[video.category] || categoryInfo['other'];
+                    const resolvedSrc = typeof getVideoUrl === 'function' ? getVideoUrl(video.src) : video.src;
+                    
+                    const card = document.createElement('div');
+                    card.className = 'lecture-card';
+                    card.style.animation = `fadeIn 0.5s ease forwards ${index * 0.05}s`;
+                    card.style.opacity = '0';
+                    
+                    card.innerHTML = `
+                        <div class="lecture-video">
+                            <span class="video-badge" style="background: ${info.color}">${info.label}</span>
+                            <video preload="metadata" muted playsinline>
+                                <source src="${resolvedSrc}" type="video/mp4">
+                            </video>
+                            <div class="play-overlay">
+                                <div class="play-btn"><i class="fas fa-play"></i></div>
+                            </div>
+                        </div>
+                        <div class="lecture-content">
+                            <h3>${video.title}</h3>
+                            <p>${video.description || 'Описание отсутствует'}</p>
+                            <div class="lecture-meta">
+                                <span class="duration-chip"><i class="far fa-clock"></i> ${video.duration}</span>
+                                <span><i class="far fa-eye"></i> ${Math.floor(Math.random() * 1000) + 100}</span>
+                                ${video.isCustom ? `<button class="btn-delete-lecture" data-id="${video.id}" title="Удалить добавленное видео" style="background:none; border:none; color:var(--accent); cursor:pointer; font-size:0.95rem; margin-left:auto; padding:4px 8px;"><i class="fas fa-trash-alt"></i></button>` : ''}
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Удаление добавленного пользователем видео
+                    const delBtn = card.querySelector('.btn-delete-lecture');
+                    if (delBtn) {
+                        delBtn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            if (confirm(`Удалить видео "${video.title}" из списка?`)) {
+                                videos = videos.filter(v => v.id !== video.id);
+                                localStorage.setItem('edutwin-videos', JSON.stringify(videos));
+                                renderVideos(document.querySelector('.filter-btn.active')?.dataset.filter || 'all');
+                            }
+                        });
+                    }
+                    
+                    // Сохраняем логику hover предпросмотра
+                    const vid = card.querySelector('video');
+                    card.addEventListener('mouseenter', () => vid.play().catch(()=>{}));
+                    card.addEventListener('mouseleave', () => { vid.pause(); vid.currentTime = 0; });
+                    
+                    // Добавляем клик для открытия плеера!
+                    card.addEventListener('click', () => {
+                        vid.pause(); // останавливаем предпросмотр
+                        openPlayer(video.src);
+                    });
+
+                    lecturesGrid.appendChild(card);
+                });
+            }
+
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    renderVideos(btn.dataset.filter);
+                });
+            });
+            
+            renderVideos(); 
+
+            // --- UI LOGIC ---
+            const header = document.getElementById('header');
+            const mobileBtn = document.querySelector('.mobile-menu-btn');
+            const mobileNav = document.querySelector('.mobile-nav');
+            
+            window.addEventListener('scroll', () => header.classList.toggle('scrolled', window.scrollY > 50));
+            
+            mobileBtn.addEventListener('click', () => {
+                mobileNav.classList.toggle('active');
+                mobileBtn.innerHTML = mobileNav.classList.contains('active') ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
+            });
+            
+            mobileNav.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileNav.classList.remove('active');
+                    mobileBtn.innerHTML = '<i class="fas fa-bars"></i>';
+                });
+            });
+
+            // --- CHAT LOGIC ---
+            const chatContainer = document.getElementById('chat-messages');
+            const userInput = document.getElementById('user-input');
+            const chatForm = document.getElementById('chat-form');
+            const typingIndicator = document.getElementById('typing-indicator');
+
+            // Переменная для хранения картинки
+            let currentImageBase64 = null;
+
+            // Обработка загрузки картинки
+            document.getElementById('chat-image-input').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    currentImageBase64 = event.target.result;
+                    document.getElementById('preview-img').src = currentImageBase64;
+                    document.getElementById('image-preview-container').style.display = 'block';
+                };
+                reader.readAsDataURL(file); // Конвертируем в Base64
+            });
+
+            // Очистка картинки
+            window.clearImage = function() {
+                currentImageBase64 = null;
+                document.getElementById('chat-image-input').value = '';
+                document.getElementById('image-preview-container').style.display = 'none';
+            };
+
+            // Оживляем кнопки "Сократить", "Объяснить", "Проверить"
+            document.getElementById('btn-shorten').addEventListener('click', () => { userInput.value = "Сократи этот текст: "; userInput.focus(); });
+            document.getElementById('btn-explain').addEventListener('click', () => { userInput.value = "Объясни подробнее: "; userInput.focus(); });
+            document.getElementById('btn-check').addEventListener('click', () => { userInput.value = "Проверь этот текст на ошибки: "; userInput.focus(); });
+
+            // --- БОКОВАЯ ПАНЕЛЬ ЧАТА (БЫСТРЫЕ СЦЕНАРИИ И НОВЫЙ ДИАЛОГ) ---
+            const chatHistoryItems = document.querySelectorAll('.chat-history-item');
+            chatHistoryItems.forEach(item => {
+                item.style.cursor = 'pointer';
+                item.addEventListener('click', () => {
+                    chatHistoryItems.forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+
+                    const text = item.innerText || '';
+                    if (text.includes('Figma')) {
+                        userInput.value = 'Помоги разобраться с интерфейсом, компонентами и автолейаутами в Figma';
+                        chatForm.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+                    } else if (text.includes('React')) {
+                        userInput.value = 'Объясни, как работают хуки useState и useEffect в React с наглядным примером кода';
+                        chatForm.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+                    }
+                });
+            });
+
+            const newChatBtn = document.getElementById('new-chat-btn');
+            if (newChatBtn) {
+                newChatBtn.addEventListener('click', () => {
+                    chatContainer.innerHTML = `
+                        <div class="message bot">
+                            <div class="message-content">Здравствуйте! Я ваш виртуальный преподаватель. Готова проверить ваше эссе, объяснить сложную тему или помочь с кодом.</div>
+                        </div>
+                    `;
+                    userInput.value = '';
+                    if (typeof clearImage === 'function') clearImage();
+                    chatHistoryItems.forEach((i, idx) => {
+                        i.classList.toggle('active', idx === 0);
+                    });
+                });
+            }
+
+            function appendMsg(htmlContent, sender) {
+                const div = document.createElement('div');
+                div.className = `message ${sender}`;
+                div.innerHTML = `<div class="message-content">${htmlContent}</div>`;
+                chatContainer.appendChild(div);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+
+
+            chatForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const text = userInput.value.trim();
+                const img = currentImageBase64;
+                
+                // Если нет ни текста, ни картинки - ничего не делаем
+                if(!text && !img) return;
+                
+                // Формируем сообщение пользователя для UI
+                let displayHtml = text;
+                if (img) {
+                    displayHtml += `<br><img src="${img}" style="max-width: 200px; border-radius: 8px; margin-top: 10px;">`;
+                }
+                
+                appendMsg(displayHtml, 'user');
+                userInput.value = '';
+                clearImage(); // Сбрасываем картинку после отправки
+                
+                typingIndicator.style.display = 'flex';
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+
+                // Отправляем запрос (текст + картинка)
+                const botResponse = await fetchGeminiResponse(text, img);
+                
+                typingIndicator.style.display = 'none';
+                appendMsg(botResponse, 'bot');
+            });
+
+                // --- НОВАЯ ЛОГИКА AI ТЕСТИРОВАНИЯ ---
+                            let currentTestData = []; 
+                            const btnGenerate = document.getElementById('btn-generate-test');
+
+                            if (btnGenerate) {
+                                btnGenerate.addEventListener('click', async () => {
+                                    const subject = document.getElementById('test-subject').value || "Общая эрудиция";
+                                    const difficulty = document.getElementById('test-difficulty').value;
+                                    const questionCount = document.getElementById('test-count').value; // Получаем количество
+
+                                    btnGenerate.innerHTML = 'Нейросеть составляет вопросы... <i class="fas fa-spinner fa-spin"></i>';
+                                    btnGenerate.disabled = true;
+
+                                    // Обновленный промпт с переменной questionCount
+                                    const prompt = `Составь ${questionCount} тестовых вопроса(ов) по предмету "${subject}", уровень сложности: "${difficulty}". 
+                                    Верни ответ СТРОГО в формате JSON. Никакого текста, только массив объектов такой структуры:
+                                    [
+                                    {
+                                        "question": "Текст вопроса",
+                                        "options": ["Вариант 1", "Вариант 2", "Вариант 3", "Вариант 4"],
+                                        "correctAnswerIndex": 0
+                                    }
+                                    ]`;
+
+                                    try {
+                                        console.log("Отправляем запрос к ИИ...");
+                                        // Используем вашу готовую функцию из чата
+                                        let responseText = await fetchGeminiResponse(prompt, null);
+                                        console.log("Ответ от ИИ получен:", responseText);
+                                        
+                                        // Умный поиск JSON (на случай если ИИ добавит лишний текст)
+                                        const jsonMatch = responseText.match(/\[[\s\S]*\]/);
+                                        
+                                        if (!jsonMatch) {
+                                            throw new Error("ИИ не вернул массив JSON");
+                                        }
+
+                                        currentTestData = JSON.parse(jsonMatch[0]); 
+                                        console.log("Тест успешно создан:", currentTestData);
+                                        
+                                        // Отрисовываем вопросы
+                                        document.getElementById('test-title').innerText = `Тест: ${subject} (${difficulty})`;
+                                        const container = document.getElementById('test-questions');
+                                        container.innerHTML = '';
+
+                                        currentTestData.forEach((q, qIndex) => {
+                                            let optionsHtml = '';
+                                            q.options.forEach((opt, optIndex) => {
+                                                optionsHtml += `
+                                                    <label style="display: block; margin-bottom: 10px; padding: 15px; background: var(--gray-1); border-radius: 12px; cursor: pointer; border: 1px solid transparent; transition: 0.2s;" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='transparent'">
+                                                        <input type="radio" name="q${qIndex}" value="${optIndex}" style="margin-right: 10px;"> ${opt}
+                                                    </label>
+                                                `;
+                                            });
+
+                                            container.innerHTML += `
+                                                <div style="margin-bottom: 30px;">
+                                                    <h4 style="margin-bottom: 15px; font-size: 1.1rem;">${qIndex + 1}. ${q.question}</h4>
+                                                    ${optionsHtml}
+                                                </div>
+                                            `;
+                                        });
+                                        
+                                        // Переключаем экраны
+                                        document.getElementById('test-setup').style.display = 'none';
+                                        document.getElementById('test-container').style.display = 'block';
+                                        
+                                    } catch (error) {
+                                        alert("Ой! Произошла ошибка. Откройте консоль (F12) для деталей.");
+                                        console.error("ОШИБКА ТЕСТИРОВАНИЯ:", error);
+                                    } finally {
+                                        btnGenerate.innerHTML = 'Создать тест <i class="fas fa-magic"></i>';
+                                        btnGenerate.disabled = false;
+                                    }
+                                });
+                            } else {
+                                console.error("Кнопка btn-generate-test не найдена на странице!");
+                            }
+
+                            // Обработка завершения теста
+                            const btnSubmitTest = document.getElementById('btn-submit-test');
+                            if (btnSubmitTest) {
+                                btnSubmitTest.addEventListener('click', async () => {
+                                    console.log("Завершаем тест...");
+                                    let correctCount = 0;
+                                    let mistakes = [];
+
+                                    currentTestData.forEach((q, qIndex) => {
+                                        const selected = document.querySelector(`input[name="q${qIndex}"]:checked`);
+                                        if (selected && parseInt(selected.value) === q.correctAnswerIndex) {
+                                            correctCount++;
+                                        } else {
+                                            mistakes.push(`Ошибка в вопросе: "${q.question}".`);
+                                        }
+                                    });
+
+                                    document.getElementById('test-container').style.display = 'none';
+                                    document.getElementById('test-results').style.display = 'block';
+                                    document.getElementById('score-display').innerText = `${correctCount} / ${currentTestData.length}`;
+                                    
+                                    const aiRecommContainer = document.getElementById('ai-recommendations');
+                                    
+                                    if (correctCount === currentTestData.length) {
+                                        aiRecommContainer.innerHTML = '<p style="color: var(--success); font-weight: bold; font-size: 1.2rem;"><i class="fas fa-check-circle"></i> Отличная работа! Вы ответили верно на все вопросы.</p>';
+                                    } else {
+                                        aiRecommContainer.innerHTML = '<p>Анализирую ваши ошибки и составляю индивидуальный план... <i class="fas fa-spinner fa-spin"></i></p>';
+                                        
+                                        const prompt = `Студент только что сдал тест и допустил ошибки. Вот список его ошибок: ${mistakes.join(' | ')}. 
+                                        Ты - дружелюбный AI-преподаватель. Кратко объясни правильные концепции и дай совет. Оформи HTML тегами (<b>, <ul>). Не используй маркдаун (\`\`\`).`;
+                                        
+                                        try {
+                                            let aiFeedback = await fetchGeminiResponse(prompt, null);
+                                            aiRecommContainer.innerHTML = aiFeedback.replace(/```html/g, '').replace(/```/g, '').trim();
+                                        } catch(e) {
+                                            console.error("Ошибка при получении рекомендаций:", e);
+                                            aiRecommContainer.innerHTML = 'Оценка выставлена, но ИИ-рекомендации временно недоступны.';
+                                        }
+                                    }
+                                });
+                            }
+
+            // --- ADD VIDEO ---
+            const vModal = document.getElementById('video-modal');
+            const vForm = document.getElementById('video-form');
+            
+            document.getElementById('add-video-btn').addEventListener('click', () => vModal.classList.add('active'));
+            document.getElementById('cancel-video').addEventListener('click', () => vModal.classList.remove('active'));
+            
+            vForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const urlInput = document.getElementById('video-url');
+                const videoUrl = urlInput ? urlInput.value.trim() : '';
+                if (!videoUrl) {
+                    alert('Пожалуйста, введите корректный URL видео!');
+                    return;
+                }
+
+                const newVideo = {
+                    id: Date.now(),
+                    title: document.getElementById('video-title').value.trim() || 'Новая лекция',
+                    category: document.getElementById('video-category').value,
+                    description: document.getElementById('video-description').value.trim(),
+                    duration: (document.getElementById('video-duration').value.trim() || '5') + ' мин',
+                    src: videoUrl,
+                    isCustom: true
+                };
+
+                videos.unshift(newVideo);
+                localStorage.setItem('edutwin-videos', JSON.stringify(videos));
+                renderVideos('all');
+                vModal.classList.remove('active');
+                vForm.reset();
+            });
+        });
+    </script>
+    <script id="dsq-count-scr" src="//sauleserikovna.disqus.com/count.js" async></script>
+</body>
+</html>

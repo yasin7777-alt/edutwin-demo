@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="ru">
+<head>
+ <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+ <title>AI Studio — EduTwin</title>
+ <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+ <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+ <link rel="stylesheet" href="assets/css/ai-studio.css"><script type="module" src="assets/js/ai-studio.js"></script>
+</head>
+<body>
+ <a class="skip-link" href="#instruction">Перейти к запросу</a>
+ <header class="studio-header">
+  <a class="brand" href="index.html">EduTwin<span class="brand-dot" aria-hidden="true"></span></a>
+  <span class="header-separator" aria-hidden="true"></span><a class="studio-wordmark" href="ai-studio.html">AI Studio</a>
+  <nav aria-label="Навигация"><a href="materials.html">Материалы</a><a href="index.html#interactive">Saule AI</a></nav>
+  <span class="gemini-badge"><span aria-hidden="true"></span>Gemini Free Tier</span>
+ </header>
+ <main>
+  <section class="studio-intro">
+   <div><h1>От идеи к готовому проекту</h1><p>Создавайте презентации и сайты. Редактируйте результат сами или вместе с AI.</p></div>
+   <div class="mode-switch" role="group" aria-label="Выбор инструмента">
+    <button type="button" data-kind="presentation" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v12H4zM12 16v5M8 21h8M8 8h3M8 11h8"/></svg>Презентация</button>
+    <button type="button" data-kind="website" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M7 6.5h.01M10 6.5h.01M10 12l-3 3 3 3M14 12l3 3-3 3"/></svg>Сайт</button>
+   </div>
+  </section>
+  <div id="storage-warning" class="notice" role="status" hidden></div>
+  <div class="workspace">
+   <aside class="assistant-pane" aria-label="Проект и AI-запросы">
+    <div class="project-controls">
+     <label for="project-select">Мои проекты</label>
+     <div class="project-row"><select id="project-select" aria-label="Выбрать проект"></select><button id="new-project" class="icon-button" type="button" aria-label="Создать новый проект" title="Новый проект">+</button></div>
+     <label class="sr-only" for="project-name">Название проекта</label><input id="project-name" type="text" maxlength="160" placeholder="Название проекта">
+     <div class="file-actions"><button id="export-project" type="button">Скачать проект</button><button id="import-project" type="button">Открыть JSON</button><input id="import-file" class="sr-only" type="file" accept=".json,application/json" tabindex="-1"></div>
+    </div>
+    <div class="assistant-heading"><div class="saule-mark" aria-hidden="true">S</div><div><h2>Saule помогает создавать</h2><p id="assistant-subtitle">Структура, текст и оформление слайдов</p></div></div>
+    <div class="conversation" id="request-list" aria-label="История инструкций"></div>
+    <div class="prompt-examples"><span>Можно начать так</span><button type="button" id="example-one"></button><button type="button" id="example-two"></button></div>
+    <form id="instruction-form">
+     <label for="instruction" id="instruction-label">Что будем создавать?</label>
+     <textarea id="instruction" rows="5" maxlength="4000" required minlength="2" placeholder="Презентация на 8 слайдов про искусственный интеллект для студентов…"></textarea>
+     <div class="prompt-footer"><span id="char-count">0 / 4000</span><span>Ctrl / ⌘ + Enter</span></div>
+     <button id="generate-btn" class="primary-button" type="submit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.8 6.2L21 12l-6.2 2.8L12 21l-2.8-6.2L3 12l6.2-2.8Z"/></svg><span id="generate-label">Создать презентацию</span></button>
+     <button id="cancel-btn" class="secondary-button" type="button" hidden>Отменить запрос</button>
+    </form>
+    <p id="status" class="status-text" role="status" aria-live="polite">Подготовка рабочего пространства…</p>
+    <div class="local-note"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 10V7a6 6 0 0 1 12 0v3M4 10h16v12H4z"/></svg><p>Проекты сохраняются в этом браузере.<br>Скачайте JSON, чтобы перенести их.</p></div>
+   </aside>
+   <section class="document-pane" aria-label="Редактор и результат">
+    <div class="document-toolbar"><div><span id="document-type">Презентация</span><span class="version-badge" id="version-label">Версия 0</span></div><div class="revision-controls"><label class="sr-only" for="revision-select">Предыдущие версии</label><select id="revision-select"><option value="">История версий</option></select><button id="restore-revision" type="button" disabled>Восстановить</button></div></div>
+    <fieldset id="editor-fieldset"><legend class="sr-only">Редактирование проекта</legend>
+     <div id="presentation-panel">
+      <div id="presentation-empty" class="empty-state">
+       <div class="empty-art deck-art" aria-hidden="true"><div class="art-slide behind"></div><div class="art-slide front"><span></span><i></i><i></i><i></i></div></div>
+       <h2>Первый слайд начинается с идеи</h2><p>Укажите тему, аудиторию и число слайдов.<br>Saule соберёт презентацию, которую можно редактировать.</p>
+       <div class="empty-capabilities"><span>Текст и структура</span><span>Оформление</span><span>Редактирование</span></div>
+      </div>
+      <div id="presentation-work" hidden>
+       <div class="canvas-toolbar"><div><button id="move-left" class="icon-button" type="button" aria-label="Переместить слайд влево">←</button><button id="move-right" class="icon-button" type="button" aria-label="Переместить слайд вправо">→</button><button id="add-slide" type="button">+ Слайд</button><button id="delete-slide" type="button">Удалить</button></div><button id="present-btn" class="secondary-button" type="button">Просмотр слайдов</button></div>
+       <div class="canvas-area"><div id="slide-canvas" class="slide-fit"></div></div>
+       <div id="slides-strip" class="slides-strip" aria-label="Выбрать слайд"></div>
+       <div class="slide-editor">
+        <div class="editor-section-heading"><h3 id="slide-editor-heading">Слайд 1</h3><label for="slide-layout" class="sr-only">Композиция слайда</label><select id="slide-layout"><option value="title">Титульный</option><option value="bullets">Тезисы</option><option value="two-column">Две колонки</option><option value="quote">Цитата</option><option value="closing">Заключение</option></select></div>
+        <div class="slide-fields"><label class="wide">Заголовок<input id="slide-title" maxlength="160"></label><label>Основной текст<textarea id="slide-body" rows="4" maxlength="2000"></textarea></label><label>Тезисы — каждый с новой строки<textarea id="slide-bullets" rows="4" maxlength="2407" placeholder="До 8 тезисов, до 300 символов каждый"></textarea></label><label class="wide notes-field">Заметки докладчика<textarea id="slide-notes" rows="2" maxlength="1500"></textarea></label></div>
+        <div class="theme-controls"><span>Оформление</span><label>Фон<input id="theme-background" type="color" value="#ffffff"></label><label>Текст<input id="theme-foreground" type="color" value="#111111"></label><label>Акцент<input id="theme-accent" type="color" value="#4361ee"></label><label>Шрифт<select id="theme-font"><option>Inter</option><option>Georgia</option><option>Arial</option></select></label></div>
+       </div>
+      </div>
+     </div>
+     <div id="website-panel" hidden>
+      <div class="canvas-toolbar"><div><label for="viewport" class="sr-only">Размер preview</label><select id="viewport"><option value="desktop">Компьютер</option><option value="mobile">Телефон · 390 px</option></select></div><div><button id="stop-preview" type="button">Остановить</button><button id="reload-preview" type="button">Обновить</button><button id="export-site" class="secondary-button" type="button">Скачать HTML</button></div></div>
+      <div class="website-stage"><div id="preview-empty" class="preview-empty"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 13l-2 2 2 2M16 13l2 2-2 2M13 12l-2 6"/></svg><h2>Ваш сайт в действии</h2><p id="preview-empty-text">Опишите сайт — здесь появится живой результат.</p></div><div id="website-preview"></div></div>
+      <p id="preview-errors" class="preview-errors" role="status" hidden></p>
+      <div class="code-editor"><div class="code-toolbar"><div role="group" aria-label="Файл сайта"><button type="button" data-code-tab="html" aria-pressed="true">HTML</button><button type="button" data-code-tab="css" aria-pressed="false">CSS</button><button type="button" data-code-tab="js" aria-pressed="false">JavaScript</button></div><span>Изменения сразу видны в preview</span></div><label class="sr-only" for="code-html">HTML сайта</label><textarea id="code-html" spellcheck="false" aria-label="HTML сайта" placeholder="Здесь появится HTML. Можно также написать его вручную."></textarea><label class="sr-only" for="code-css">CSS сайта</label><textarea id="code-css" spellcheck="false" aria-label="CSS сайта" hidden></textarea><label class="sr-only" for="code-js">JavaScript сайта</label><textarea id="code-js" spellcheck="false" aria-label="JavaScript сайта" hidden></textarea></div>
+      <p class="preview-note">Просмотр изолирован. Внешние запросы и отправка форм отключены.</p>
+     </div>
+    </fieldset>
+   </section>
+  </div>
+ </main>
+ <dialog id="presentation-dialog" aria-label="Просмотр презентации"><div class="presentation-dialog-toolbar"><span id="present-count"></span><button id="close-presentation" type="button">Закрыть · Esc</button></div><div id="present-canvas" class="slide-fit"></div><div class="presentation-navigation"><button id="present-prev" type="button">← Назад</button><span>Используйте стрелки на клавиатуре</span><button id="present-next" type="button">Далее →</button></div></dialog>
+</body>
+</html>

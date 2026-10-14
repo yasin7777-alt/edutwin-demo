@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Кошелек — SkillChain</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .balance-hero {
+            background: linear-gradient(135deg, #8A5CFF, #B892FF);
+            color: white;
+            padding: 50px;
+            border-radius: 30px;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .sp-value { font-size: 64px; font-weight: 800; }
+        .price-card { text-align: center; }
+        .popular { border: 2px solid var(--primary); position: relative; }
+        .popular::after { content: "TOP"; position: absolute; top: -15px; left: 50%; transform: translateX(-50%); background: var(--primary); color: white; padding: 2px 15px; border-radius: 10px; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+            <a href="index.html" class="logo">SkillChain</a>
+            <nav><a href="profile.html">Профиль</a></nav>
+        </header>
+
+        <div class="balance-hero" style="animation: fadeInUp 0.5s ease;">
+            <p>Ваш баланс</p>
+            <div class="sp-value">750 <small style="font-size: 20px;">SP</small></div>
+            <p>1 SP ≈ 1 минута обучения</p>
+        </div>
+
+        <div class="grid-3">
+            <div class="feature-card price-card">
+                <h3>100 SP</h3>
+                <p>990 ₸</p>
+                <button>Купить</button>
+            </div>
+            <div class="feature-card price-card popular">
+                <h3>500 SP</h3>
+                <p>3 990 ₸</p>
+                <button>Купить</button>
+            </div>
+            <div class="feature-card price-card">
+                <h3>Premium</h3>
+                <p>Безлимит</p>
+                <button>Узнать больше</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

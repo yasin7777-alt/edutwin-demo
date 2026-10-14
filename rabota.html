@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Работы студентов - EduTwin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="videos-config.js"></script>
+    <style>
+        /* Стили остаются без изменений */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Arial', sans-serif;
+        }
+
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #7209b7;
+            --accent: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray-1: #f1f3f5;
+            --gray-2: #e9ecef;
+            --gray-3: #dee2e6;
+            --gray-7: #495057;
+            --gray-9: #212529;
+            --success: #4cc9f0;
+            --error: #f72585;
+            --warning: #ffb800;
+            --gradient: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        }
+
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Скрытие бейджика Netlify Drawer (Powered by Netlify) */
+        netlify-drawer,
+        [data-netlify-drawer],
+        iframe[src*="netlify"],
+        div[class*="netlify-drawer"],
+        div[class*="netlify-feedback"],
+        div[id*="netlify-drawer"] {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 20px 0;
+            background-color: rgba(255, 255, 255, 0.95);
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: var(--gradient);
+            border-radius: 50%;
+            margin-left: 4px;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: var(--gradient);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        .back-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(67, 97, 238, 0.4);
+        }
+
+        .hero {
+            min-height: 40vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            padding-top: 100px;
+            background: var(--light);
+        }
+
+        .hero-content {
+            max-width: 800px;
+            text-align: center;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            line-height: 1.2;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            color: var(--gray-7);
+            line-height: 1.6;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 14px 32px;
+            background: var(--gradient);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(67, 97, 238, 0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        section {
+            padding: 80px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+            position: relative;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            display: inline-block;
+            color: var(--dark);
+        }
+
+        .section-title:after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 4px;
+            background: var(--gradient);
+            border-radius: 2px;
+        }
+
+        .student-works-section {
+            background-color: white;
+            position: relative;
+        }
+
+        .works-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .work-card {
+            background-color: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            border: 1px solid var(--gray-2);
+        }
+
+        .work-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+
+        .work-video {
+            height: 220px;
+            background: var(--gray-2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .work-video video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .work-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 6px 12px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--primary);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .work-content {
+            padding: 25px;
+        }
+
+        .work-content h3 {
+            margin-bottom: 12px;
+            font-size: 1.3rem;
+            color: var(--dark);
+        }
+
+        .work-content p {
+            color: var(--gray-7);
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .work-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .work-duration {
+            font-size: 0.9rem;
+            color: var(--gray-7);
+            font-weight: 500;
+            background-color: var(--gray-1);
+            padding: 5px 10px;
+            border-radius: 12px;
+        }
+
+        .work-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .work-actions .btn {
+            flex: 1;
+            padding: 10px;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 70px 0 30px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-column h3 {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            position: relative;
+            padding-bottom: 10px;
+            color: white;
+        }
+
+        .footer-column h3:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 30px;
+            height: 3px;
+            background: var(--gradient);
+            border-radius: 2px;
+        }
+
+        .footer-column ul {
+            list-style: none;
+        }
+
+        .footer-column ul li {
+            margin-bottom: 12px;
+        }
+
+        .footer-column ul li a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .footer-column ul li a:hover {
+            color: white;
+            padding-left: 5px;
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.3rem;
+            }
+
+            .hero p {
+                font-size: 1.1rem;
+            }
+
+            .works-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section-title h2 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+<script src="assets/js/edutwin-auth.js"></script>
+</head>
+
+<body>
+    <header id="header">
+        <div class="container header-container">
+            <a href="index.html" class="logo">EduTwin<span class="logo-dot"></span></a>
+            <a href="index.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i> На главную
+            </a>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container hero-content">
+            <h1>Видео работы студентов</h1>
+            <p>Ознакомьтесь с видео работами, созданными студентами в рамках учебного процесса. Здесь вы найдете
+                обучающие материалы и проекты по различным темам искусственного интеллекта.</p>
+        </div>
+    </section>
+
+    <section id="student-works" class="student-works-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Видео галерея</h2>
+            </div>
+
+            <div class="works-grid" id="works-grid">
+                <!-- Видео будут загружены через JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>EduTwin</h3>
+                    <ul>
+                        <li><a href="index.html">Главная страница</a></li>
+                        <li><a href="#">О нас</a></li>
+                        <li><a href="#">Команда</a></li>
+                        <li><a href="#">Блог</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Ресурсы</h3>
+                    <ul>
+                        <li><a href="#">Документация</a></li>
+                        <li><a href="#">Учебные материалы</a></li>
+                        <li><a href="#">Форум</a></li>
+                        <li><a href="#">Поддержка</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Контакты</h3>
+                    <ul>
+                        <li><a href="mailto:Bakdaulet.agabi.dima@gmail.com"><i class="fas fa-envelope" style="margin-right: 6px;"></i> Bakdaulet.agabi.dima@gmail.com</a></li>
+                        <li><a href="tel:+77771234567"><i class="fas fa-phone-alt" style="margin-right: 6px;"></i> +7 (777) 123-45-67</a></li>
+                        <li><span><i class="fas fa-map-marker-alt" style="margin-right: 6px;"></i> Казахстан, Алматы</span></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>© 2025 EduTwin. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Проверка сессии пользователя
+        EduTwinAuth.setupNavigation();
+        
+        // Полный набор из 40 видео
+        let videos = [
+            {
+                id: 1,
+                title: "ИИ видео 1",
+                description: "Нейросети для обработки изображений",
+                duration: "2:50",
+                src: "33.mp4"
+            },
+            {
+                id: 2,
+                title: "ИИ видео 2",
+                description: "Машинное обучение в действии",
+                duration: "3:40",
+                src: "34.mp4"
+            },
+            {
+                id: 3,
+                title: "ИИ видео 3",
+                description: "Глубокое обучение для анализа данных",
+                duration: "4:05",
+                src: "35.mp4"
+            },
+            {
+                id: 4,
+                title: "ИИ видео 4",
+                description: "ИИ в медицине и диагностике",
+                duration: "3:25",
+                src: "36.mp4"
+            },
+            {
+                id: 5,
+                title: "ИИ видео 5",
+                description: "Нейросети для распознавания речи",
+                duration: "3:30",
+                src: "18.mp4"
+            },
+            {
+                id: 6,
+                title: "ИИ видео 6",
+                description: "ИИ в образовательных технологиях",
+                duration: "4:15",
+                src: "37.mp4"
+            },
+            {
+                id: 7,
+                title: "ИИ видео 7",
+                description: "Генеративные модели в ИИ",
+                duration: "3:50",
+                src: "38.mp4"
+            },
+            {
+                id: 8,
+                title: "ИИ видео 8",
+                description: "Обучение с подкреплением",
+                duration: "4:10",
+                src: "23.mp4"
+            },
+            {
+                id: 9,
+                title: "ИИ видео 9",
+                description: "Автоэнкодеры и их применение",
+                duration: "2:55",
+                src: "25.mp4"
+            },
+            {
+                id: 10,
+                title: "ИИ видео 10",
+                description: "Генетические алгоритмы",
+                duration: "3:45",
+                src: "26.mp4"
+            },
+            {
+                id: 11,
+                title: "ИИ видео 11",
+                description: "Обработка естественного языка",
+                duration: "4:00",
+                src: "27.mp4"
+            },
+            {
+                id: 12,
+                title: "ИИ видео 12",
+                description: "Компьютерное зрение в реальном времени",
+                duration: "3:15",
+                src: "28.mp4"
+            },
+            {
+                id: 13,
+                title: "ИИ видео 13",
+                description: "Глубокое обучение для прогнозирования",
+                duration: "2:50",
+                src: "29.mp4"
+            },
+            {
+                id: 14,
+                title: "ИИ видео 14",
+                description: "Нейросети для классификации данных",
+                duration: "3:30",
+                src: "30.mp4"
+            },
+            {
+                id: 15,
+                title: "ИИ видео 15",
+                description: "Ансамбли моделей в машинном обучении",
+                duration: "4:25",
+                src: "31.mp4"
+            },
+            {
+                id: 16,
+                title: "ИИ видео 16",
+                description: "Оптимизация гиперпараметров в ИИ",
+                duration: "3:40",
+                src: "32.mp4"
+            },
+            {
+                id: 17,
+                title: "ИИ видео 17",
+                description: "Сверточные нейронные сети",
+                duration: "3:40",
+                src: "39.mp4"
+            },
+            {
+                id: 18,
+                title: "ИИ видео 18",
+                description: "Рекуррентные нейронные сети",
+                duration: "3:40",
+                src: "40.mp4"
+            },
+            {
+                id: 19,
+                title: "ИИ видео 19",
+                description: "Трансформеры в NLP",
+                duration: "3:40",
+                src: "41.mp4"
+            },
+            {
+                id: 20,
+                title: "ИИ видео 20",
+                description: "GAN - Generative Adversarial Networks",
+                duration: "3:40",
+                src: "45.mp4"
+            },
+            {
+                id: 21,
+                title: "ИИ видео 21",
+                description: "Обучение без учителя",
+                duration: "3:40",
+                src: "42.mp4"
+            },
+            {
+                id: 22,
+                title: "ИИ видео 22",
+                description: "Обучение с учителем",
+                duration: "3:40",
+                src: "43.mp4"
+            },
+            {
+                id: 23,
+                title: "ИИ видео 23",
+                description: "Полу-контролируемое обучение",
+                duration: "3:40",
+                src: "44.mp4"
+            },
+            // Добавляем еще 17 видео для достижения 40
+            {
+                id: 24,
+                title: "ИИ видео 24",
+                description: "Transfer Learning в глубоком обучении",
+                duration: "3:20",
+                src: "24.mp4"
+            },
+            {
+                id: 25,
+                title: "ИИ видео 25",
+                description: "Обнаружение аномалий с помощью ИИ",
+                duration: "2:45",
+                src: "25.mp4"
+            },
+            {
+                id: 26,
+                title: "ИИ видео 26",
+                description: "Кластеризация данных",
+                duration: "3:15",
+                src: "26.mp4"
+            },
+            {
+                id: 27,
+                title: "ИИ видео 27",
+                description: "Рекомендательные системы",
+                duration: "4:05",
+                src: "27.mp4"
+            },
+            {
+                id: 28,
+                title: "ИИ видео 28",
+                description: "Обработка временных рядов",
+                duration: "3:50",
+                src: "28.mp4"
+            },
+            {
+                id: 29,
+                title: "ИИ видео 29",
+                description: "Компьютерное зрение для автономных систем",
+                duration: "4:20",
+                src: "29.mp4"
+            },
+            {
+                id: 30,
+                title: "ИИ видео 30",
+                description: "NLP для анализа тональности",
+                duration: "3:10",
+                src: "30.mp4"
+            },
+            {
+                id: 31,
+                title: "ИИ видео 31",
+                description: "Глубокое обучение для робототехники",
+                duration: "3:45",
+                src: "31.mp4"
+            },
+            {
+                id: 32,
+                title: "ИИ видео 32",
+                description: "ИИ в финансовой аналитике",
+                duration: "4:00",
+                src: "32.mp4"
+            },
+            {
+                id: 33,
+                title: "ИИ видео 33",
+                description: "Обучение с подкреплением в играх",
+                duration: "3:30",
+                src: "33.mp4"
+            },
+            {
+                id: 34,
+                title: "ИИ видео 34",
+                description: "Генерация текста с помощью ИИ",
+                duration: "2:55",
+                src: "34.mp4"
+            },
+            {
+                id: 35,
+                title: "ИИ видео 35",
+                description: "Обнаружение объектов на изображениях",
+                duration: "3:40",
+                src: "35.mp4"
+            },
+            {
+                id: 36,
+                title: "ИИ видео 36",
+                description: "Сегментация изображений",
+                duration: "3:25",
+                src: "36.mp4"
+            },
+            {
+                id: 37,
+                title: "ИИ видео 37",
+                description: "Style Transfer с нейросетями",
+                duration: "3:15",
+                src: "37.mp4"
+            },
+            {
+                id: 38,
+                title: "ИИ видео 38",
+                description: "Автоматическое машинное обучение",
+                duration: "4:10",
+                src: "38.mp4"
+            },
+            {
+                id: 39,
+                title: "ИИ видео 39",
+                description: "Объяснимый искусственный интеллект",
+                duration: "3:50",
+                src: "39.mp4"
+            },
+            {
+                id: 40,
+                title: "ИИ видео 40",
+                description: "Этические аспекты искусственного интеллекта",
+                duration: "4:30",
+                src: "40.mp4"
+            }
+        ];
+
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function () {
+            const worksGrid = document.getElementById('works-grid');
+
+            // Проверяем количество видео
+            console.log('Всего видео:', videos.length);
+
+            // Рендеринг видео
+            function renderVideos() {
+                worksGrid.innerHTML = '';
+
+                videos.forEach(video => {
+                    const resolvedSrc = typeof getVideoUrl === 'function' ? getVideoUrl(video.src) : video.src;
+                    const workCard = document.createElement('div');
+                    workCard.className = 'work-card';
+                    workCard.innerHTML = `
+                        <div class="work-video">
+                            <video controls preload="metadata" playsinline>
+                                <source src="${resolvedSrc}" type="video/mp4">
+                                Ваш браузер не поддерживает видео тег.
+                            </video>
+                            <div class="work-badge">${video.duration}</div>
+                        </div>
+                        <div class="work-content">
+                            <h3>${video.title}</h3>
+                            <p>${video.description}</p>
+                            <div class="work-meta">
+                                <div class="work-duration">${video.duration}</div>
+                            </div>
+                            <div class="work-actions">
+                                <button class="btn watch-video" data-id="${video.id}">
+                                    <i class="fas fa-play"></i> Смотреть
+                                </button>
+                                <button class="btn btn-outline share-video" data-id="${video.id}">
+                                    <i class="fas fa-share"></i> Поделиться
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    worksGrid.appendChild(workCard);
+                });
+
+                // Добавление обработчиков событий для кнопок
+                document.querySelectorAll('.watch-video').forEach(btn => {
+                    btn.addEventListener('click', function () {
+                        const videoId = this.getAttribute('data-id');
+                        const video = videos.find(v => v.id == videoId);
+                        if (video) {
+                            const videoElement = this.closest('.work-card').querySelector('video');
+                            videoElement.play();
+                        }
+                    });
+                });
+
+                document.querySelectorAll('.share-video').forEach(btn => {
+                    btn.addEventListener('click', function () {
+                        const videoId = this.getAttribute('data-id');
+                        const video = videos.find(v => v.id == videoId);
+                        if (video) {
+                            if (navigator.share) {
+                                navigator.share({
+                                    title: video.title,
+                                    text: video.description,
+                                    url: window.location.href
+                                });
+                            } else {
+                                alert(`Поделиться видео: ${video.title}`);
+                            }
+                        }
+                    });
+                });
+            }
+
+            // Инициализация отображения видео
+            renderVideos();
+        });
+    </script>
+</body>
+</html>

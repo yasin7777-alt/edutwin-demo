@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация — EduTwin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Базовые стили и переменные, скопированные из вашего index.html для консистентности */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Arial', sans-serif;
+        }
+
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #7209b7;
+            --accent: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray-1: #f1f3f5;
+            --gray-2: #e9ecef;
+            --gray-3: #dee2e6;
+            --gray-7: #495057;
+            --gray-9: #212529;
+            --success: #4cc9f0;
+            --error: #f72585;
+            --warning: #ffb800;
+            --gradient: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        }
+
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: var(--gradient);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            max-width: 450px;
+            width: 100%;
+            padding: 20px;
+        }
+        
+        /* Стили для формы регистрации */
+        .register-card {
+            background-color: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .logo-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: var(--gradient);
+            border-radius: 50%;
+            margin-left: 5px;
+        }
+
+        .register-card h1 {
+            font-size: 1.8rem;
+            color: var(--dark);
+            margin-bottom: 10px;
+        }
+
+        .register-card p {
+            color: var(--gray-7);
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+            position: relative;
+        }
+        
+        .form-group .icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-3);
+            transition: color 0.3s ease;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 14px 14px 45px;
+            border: 1px solid var(--gray-2);
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+
+        .form-control:focus + .icon {
+            color: var(--primary);
+        }
+        
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 14px 32px;
+            background: var(--gradient);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+            font-size: 1rem;
+            margin-top: 10px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(67, 97, 238, 0.4);
+        }
+
+        .login-link {
+            margin-top: 25px;
+            font-size: 0.9rem;
+            color: var(--gray-7);
+        }
+
+        .login-link a {
+            color: var(--primary);
+            font-weight: 500;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .login-link a:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="register-card">
+            <a href="index.html" class="logo">EduTwin<span class="logo-dot"></span></a>
+            <h1>Создать аккаунт</h1>
+            <p>Присоединяйтесь к нашему сообществу!</p>
+
+            <form id="register-form">
+                <p style="font-size:12px;color:#64748b;margin-bottom:18px;line-height:1.5">Новый аккаунт получает роль «Студент» и доступ к заданиям в режиме просмотра. Полный доступ может выдать администратор.</p>
+                <div id="form-error" role="alert" style="display:none;padding:10px 12px;border-radius:10px;background:#fef2f2;color:#b91c1c;font-size:13px;margin-bottom:12px"></div>
+                <div class="form-group">
+                    <input type="text" id="name" class="form-control" autocomplete="name" placeholder="Ваше имя" required>
+                    <i class="fas fa-user icon"></i>
+                </div>
+                <div class="form-group">
+                    <input type="email" id="email" class="form-control" autocomplete="email" placeholder="Email" required>
+                    <i class="fas fa-envelope icon"></i>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="password" class="form-control" autocomplete="new-password" minlength="6" placeholder="Пароль" required>
+                    <i class="fas fa-lock icon"></i>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="confirm-password" class="form-control" autocomplete="new-password" minlength="6" placeholder="Подтвердите пароль" required>
+                     <i class="fas fa-check-circle icon"></i>
+                </div>
+                <button type="submit" class="btn">Зарегистрироваться</button>
+            </form>
+
+            <div class="login-link">
+                <p>Уже есть аккаунт? <a href="account.html">Войти</a></p>
+            </div>
+        </div>
+    </div>
+    <script src="assets/js/edutwin-auth.js"></script>
+    <script>
+        const form = document.getElementById('register-form');
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const err = document.getElementById('form-error');
+            err.style.display='none';
+            try {
+                EduTwinAuth.register({
+                    name: document.getElementById('name').value,
+                    email: document.getElementById('email').value,
+                    password: document.getElementById('password').value,
+                    confirmPassword: document.getElementById('confirm-password').value
+                });
+                window.location.href = 'account.html';
+            } catch(error) {
+                err.textContent=error.message || 'Не удалось создать аккаунт.';
+                err.style.display='block';
+            }
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,44 @@
+[build]
+  command = "npm run build"
+  functions = "netlify/functions"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+[functions]
+  node_bundler = "esbuild"
+
+[dev]
+  command = "npm run preview"
+  targetPort = 4173
+  port = 8888
+  autoLaunch = false
+
+[[redirects]]
+  from = "/api/chat"
+  to = "/.netlify/functions/chat"
+  status = 200
+
+[[redirects]]
+  from = "/api/send_email"
+  to = "/.netlify/functions/send_email"
+  status = 200
+
+[[redirects]]
+  from = "/api/ai/presentation"
+  to = "/.netlify/functions/ai-presentation"
+  status = 200
+
+[[redirects]]
+  from = "/api/ai/website"
+  to = "/.netlify/functions/ai-website"
+  status = 200
+
+[[headers]]
+  for = "/ai-studio.html"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "no-referrer"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; frame-src 'self' about:; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'self'"

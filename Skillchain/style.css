@@ -1,0 +1,243 @@
+/* Переменные для быстрой настройки цветов */
+:root {
+    --primary: #6C63FF;
+    --primary-dark: #554ec7;
+    --accent: #FF8A00;
+    --bg: #f8f9ff;
+    --glass: rgba(255, 255, 255, 0.8);
+    --card-shadow: 0 10px 30px rgba(108, 99, 255, 0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    background: var(--bg);
+    color: #2D3436;
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+/* Анимации */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}
+
+/* ОБЩИЙ КОНТЕЙНЕР — теперь на весь экран */
+.wrapper {
+    width: 100%;
+    max-width: 100%; /* Убираем ограничение */
+    margin: 0;
+    padding: 20px 4vw; /* Оставляем небольшие отступы по бокам для красоты */
+    background: transparent; /* Убираем белый фон, чтобы градиент body был виден */
+    box-shadow: none;
+    padding-top: 0;
+}
+
+header {
+    /* Фиксация с отступом */
+    position: sticky;
+    top: 20px; /* Отступ от верхнего края экрана */
+    z-index: 1000;
+
+    /* Размеры и центровка */
+    width: 94%; /* Не на весь экран, чтобы были видны края */
+    max-width: 1400px;
+    margin: 0 auto 40px auto; /* Центрируем и добавляем отступ снизу */
+    
+    /* Стеклянный эффект */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 40px;
+    background: rgba(255, 255, 255, 0.75); 
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    
+    /* Закругление и тени */
+    border-radius: 20px; /* Сильное скругление краев */
+    border: 1px solid rgba(255, 255, 255, 0.4); /* Тонкая светлая граница */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); /* Мягкая тень */
+    
+    transition: all 0.3s ease;
+}
+
+/* Эффект при наведении на сам хедер */
+header:hover {
+    background: rgba(255, 255, 255, 0.85);
+    transform: translateY(2px); /* Легкое движение при взаимодействии */
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--primary);
+    text-decoration: none;
+}
+/* HERO — растягиваем на всю ширину */
+.hero {
+    display: flex;
+    width: 100%;
+    min-height: 60vh; /* Занимает больше места по высоте */
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+nav a {
+    margin-left: 25px;
+    text-decoration: none;
+    color: #444;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+nav a:hover { color: var(--primary); }
+
+/* Кнопки */
+button, .main-btn {
+    background: linear-gradient(135deg, var(--primary), #8A5CFF);
+    color: white;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 6px 15px rgba(108, 99, 255, 0.3);
+}
+
+button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(108, 99, 255, 0.4);
+}
+
+/* Главный блок (Hero) */
+.hologram-bg {
+    background: linear-gradient(rgba(108, 99, 255, 0.8), rgba(138, 92, 255, 0.8)), 
+                url('city-committed-education-collage-concept.jpg') center/cover;
+    padding: 100px 60px;
+    border-radius: 40px;
+    margin: 40px 0;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    animation: fadeInUp 0.8s ease;
+}
+
+.hero-text h1 { font-size: 48px; line-height: 1.2; margin-bottom: 20px; }
+.hero-image img { animation: float 4s infinite ease-in-out; }
+
+/* Карточки */
+.feature-card, .teacher-card, .review-card {
+    background: white;
+    border-radius: 24px;
+    padding: 30px;
+    border: 1px solid rgba(0,0,0,0.05);
+    box-shadow: var(--card-shadow);
+    transition: 0.4s;
+}
+
+.feature-card:hover { transform: translateY(-10px); }
+
+/* Футер */
+footer {
+    background: #f0f2f9;
+    padding: 60px 40px;
+    border-radius: 40px 40px 0 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 40px;
+}
+
+/* Сетка для баланса и рейтинга */
+.grid-3 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Карточки сами тянутся */
+    gap: 30px;
+    width: 100%;
+}
+/* Заголовки секций */
+.section-title {
+    text-align: center;
+    font-size: 32px;
+    margin-bottom: 40px;
+    color: #2D3436;
+}
+
+.section {
+    width: 100%;
+    margin-bottom: 80px;
+}
+
+/* Карточки учителей */
+.teacher-card {
+    text-align: center;
+    background: white;
+    padding: 30px;
+    border-radius: 30px;
+    box-shadow: var(--card-shadow);
+    transition: 0.3s;
+}
+
+.teacher-card img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-bottom: 15px;
+    object-fit: cover;
+    border: 3px solid #eee;
+}
+
+/* Баннер призыва к действию */
+.cta-banner {
+    background: linear-gradient(135deg, var(--primary), #8A5CFF);
+    border-radius: 40px;
+    padding: 60px;
+    text-align: center;
+    color: white;
+    margin-top: 100px;
+}
+
+.cta-banner h2 { font-size: 36px; margin-bottom: 15px; }
+
+/* Футер */
+footer {
+    width: 100vw;
+    margin-left: calc(-6vw); /* Компенсируем отступ wrapper, чтобы футер прилип к краям */
+    padding: 60px 6vw;
+    background: #f4f6ff;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 50px;
+}
+
+.footer-section h3 { margin-bottom: 20px; }
+.footer-section ul { list-style: none; }
+.footer-section ul li { margin-bottom: 10px; }
+.footer-section ul li a { text-decoration: none; color: #666; transition: 0.3s; }
+.footer-section ul li a:hover { color: var(--primary); }
+
+/* Адаптивность для мобилок */
+@media (max-width: 768px) {
+    .footer-grid { grid-template-columns: 1fr; text-align: center; }
+    .hero-image { display: none; }
+    .hologram-bg { padding: 40px 20px; }
+}

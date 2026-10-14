@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Рейтинг учителей — SkillChain</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Специфические стили для страницы рейтинга */
+        .rating-container {
+            max-width: 900px;
+            margin: 40px auto;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .leaderboard-card {
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border-radius: 30px;
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: var(--card-shadow);
+        }
+
+        .leaderboard {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 12px; /* Расстояние между строками */
+        }
+
+        .leaderboard th {
+            text-align: left;
+            padding: 10px 20px;
+            color: #7f8c8d;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 1px;
+        }
+
+        .leaderboard tr {
+            transition: transform 0.3s ease;
+        }
+
+        .leaderboard td {
+            background: white;
+            padding: 20px;
+            transition: 0.3s;
+        }
+
+        /* Закругление углов для каждой строки */
+        .leaderboard td:first-child { border-radius: 15px 0 0 15px; }
+        .leaderboard td:last-child { border-radius: 0 15px 15px 0; }
+
+        .leaderboard tr:hover {
+            transform: scale(1.02);
+            z-index: 10;
+        }
+
+        .leaderboard tr:hover td {
+            box-shadow: 0 5px 15px rgba(108, 99, 255, 0.1);
+            color: var(--primary);
+        }
+
+        /* Стили для призовых мест */
+        .rank {
+            font-weight: 800;
+            font-size: 18px;
+            width: 60px;
+        }
+
+        .rank.gold { color: #FFD700; }
+        .rank.silver { color: #C0C0C0; }
+        .rank.bronze { color: #CD7F32; }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-info b { font-size: 16px; }
+
+        .skill-tag {
+            background: #f0f2f9;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #555;
+        }
+
+        .points-badge {
+            background: linear-gradient(135deg, var(--primary), #8A5CFF);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 10px;
+            font-weight: 700;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+<div class="wrapper">
+    <header>
+        <a href="index.html" class="logo">SkillChain</a>
+        <nav>
+            <a href="index.html">Главная</a>
+            <a href="faq.html">Помощь</a>
+            <a href="profile.html">Профиль</a>
+        </nav>
+    </header>
+
+    <div class="rating-container">
+        <h1 style="margin-bottom: 30px; text-align: center;">Топ наставников</h1>
+        
+        <div class="leaderboard-card">
+            <table class="leaderboard">
+                <thead>
+                    <tr>
+                        <th>Место</th>
+                        <th>Пользователь</th>
+                        <th>Навык</th>
+                        <th>Оценка</th>
+                        <th>Баллы (SP)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="rank gold">🥇 1</td>
+                        <td>
+                            <div class="user-info">
+                                <b>Cristiano</b>
+                            </div>
+                        </td>
+                        <td><span class="skill-tag">Футбол</span></td>
+                        <td>⭐ 5.0</td>
+                        <td><span class="points-badge">4120</span></td>
+                    </tr>
+                    <tr>
+                        <td class="rank silver">🥈 2</td>
+                        <td>
+                            <div class="user-info">
+                                <b>Maria</b>
+                            </div>
+                        </td>
+                        <td><span class="skill-tag">Рисование</span></td>
+                        <td>⭐ 4.9</td>
+                        <td><span class="points-badge">3980</span></td>
+                    </tr>
+                    <tr>
+                        <td class="rank bronze">🥉 3</td>
+                        <td>
+                            <div class="user-info">
+                                <b>Speed</b>
+                            </div>
+                        </td>
+                        <td><span class="skill-tag">Программирование</span></td>
+                        <td>⭐ 4.9</td>
+                        <td><span class="points-badge">3760</span></td>
+                    </tr>
+                    <tr>
+                        <td class="rank">4</td>
+                        <td><b>Aliya</b></td>
+                        <td><span class="skill-tag">Математика</span></td>
+                        <td>⭐ 4.8</td>
+                        <td><span class="points-badge">3540</span></td>
+                    </tr>
+                    <tr>
+                        <td class="rank">5</td>
+                        <td><b>Daniil</b></td>
+                        <td><span class="skill-tag">Монтаж видео</span></td>
+                        <td>⭐ 4.8</td>
+                        <td><span class="points-badge">3410</span></td>
+                    </tr>
+                    <tr>
+                        <td class="rank">6</td>
+                        <td><b>Erma</b></td>
+                        <td><span class="skill-tag">Counter Strike 2</span></td>
+                        <td>⭐ 4.8</td>
+                        <td><span class="points-badge">3120</span></td>
+                    </tr>
+                    <tr>
+                        <td class="rank">7</td>
+                        <td><b>Nikita</b></td>
+                        <td><span class="skill-tag">Веб-Дизайн</span></td>
+                        <td>⭐ 4.8</td>
+                        <td><span class="points-badge">3120</span></td>
+                    </tr>
+                    <tr>
+                        <td class="rank">8</td>
+                        <td><b>Sasha</b></td>
+                        <td><span class="skill-tag">Готовка</span></td>
+                        <td>⭐ 4.8</td>
+                        <td><span class="points-badge">3120</span></td>
+                    </tr>
+                    <tr>
+                        <td class="rank">9</td>
+                        <td><b>Kirill</b></td>
+                        <td><span class="skill-tag">Пение</span></td>
+                        <td>⭐ 4.8</td>
+                        <td><span class="points-badge">3120</span></td>
+                    </tr>
+                    <tr>
+                        <td class="rank">10</td>
+                        <td><b>Jora</b></td>
+                        <td><span class="skill-tag">Битмейк</span></td>
+                        <td>⭐ 4.7</td>
+                        <td><span class="points-badge">3120</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

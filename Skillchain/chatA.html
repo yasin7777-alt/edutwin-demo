@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Чат с наставником — SkillChain</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Специфические стили для чата вынесем сюда или добавь в style.css */
+        .chat-container {
+            display: flex;
+            height: 80vh;
+            background: white;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 40px;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        /* Список чатов */
+        .chat-sidebar {
+            width: 300px;
+            border-right: 1px solid #eee;
+            background: #fafaff;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header { padding: 25px; font-weight: 800; border-bottom: 1px solid #eee; }
+
+        /* Основное окно */
+        .chat-main {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            background: #fff;
+        }
+
+        /* Шапка чата с кнопками вызова */
+        .chat-header {
+            padding: 15px 30px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-info { display: flex; align-items: center; gap: 15px; }
+        .user-info img { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; }
+
+        .call-actions { display: flex; gap: 10px; }
+        .icon-btn {
+            background: #f0f2f9;
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.3s;
+            border: none;
+            font-size: 20px;
+        }
+        .icon-btn:hover { background: var(--primary); color: white; transform: scale(1.05); }
+
+        /* Сообщения */
+        .messages-area {
+            flex-grow: 1;
+            padding: 30px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            background: #f8f9ff;
+        }
+
+        .msg {
+            max-width: 70%;
+            padding: 12px 18px;
+            border-radius: 20px;
+            font-size: 15px;
+            animation: msgFade 0.4s ease forwards;
+        }
+        @keyframes msgFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .msg.received { background: white; align-self: flex-start; border-bottom-left-radius: 4px; }
+        .msg.sent { background: var(--primary); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+
+        /* Ввод текста */
+        .input-area {
+            padding: 20px 30px;
+            display: flex;
+            gap: 15px;
+            border-top: 1px solid #eee;
+        }
+        .input-area input {
+            flex-grow: 1;
+            padding: 12px 20px;
+            border: 2px solid #eee;
+            border-radius: 15px;
+            outline: none;
+            transition: 0.3s;
+        }
+        .input-area input:focus { border-color: var(--primary); }
+    </style>
+</head>
+<body>
+
+<div class="wrapper">
+    <header>
+        <a href="index.html" class="logo">SkillChain</a>
+        <nav>
+            <a href="index.html">Главная</a>
+            <a href="rating.html">Рейтинг</a>
+            <a href="profile.html">Профиль</a>
+        </nav>
+    </header>
+
+    <div class="chat-container">
+        <aside class="chat-sidebar">
+            <div class="sidebar-header">Ваши диалоги</div>
+            <div style="padding: 20px;">
+                <div class="user-info" style="background: white; padding: 10px; border-radius: 15px; border-left: 4px solid var(--primary);">
+                <img src="https://randomuser.me/api/portraits/men/85.jpg" alt="Teacher">
+                    <div>
+                        <div style="font-weight: 600;">Алексей</div>
+                        <div style="font-size: 12px; color: #888;">В сети</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="chat-main">
+            <div class="chat-header">
+                <div class="user-info">
+                <img src="https://randomuser.me/api/portraits/men/85.jpg" alt="Teacher">
+                    <div>
+                        <div style="font-weight: 600;">Алексей</div>
+                        <div style="font-size: 13px; color: var(--primary);">Python Разработчик</div>
+                    </div>
+                </div>
+                <div class="call-actions">
+                    <button class="icon-btn" title="Аудиовызов">📞</button>
+                    <button class="icon-btn" title="Видеовызов">🎥</button>
+                    <button class="icon-btn">⋮</button>
+                </div>
+            </div>
+
+            <div class="messages-area" id="chatWindow">
+                <div class="msg received">Привет! Меня зовут Алексей. Готов обсудить основы Python. Напиши если интересно.</div>
+            </div>
+
+            <div class="input-area">
+                <input type="text" placeholder="Напишите сообщение..." id="messageInput">
+                <button onclick="sendMessage()" style="padding: 12px 20px;">Отправить</button>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+    function sendMessage() {
+        const input = document.getElementById('messageInput');
+        const chatWindow = document.getElementById('chatWindow');
+        
+        if (input.value.trim() !== "") {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'msg sent';
+            msgDiv.textContent = input.value;
+            chatWindow.appendChild(msgDiv);
+            
+            input.value = "";
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+    }
+
+    // Отправка по Enter
+    document.getElementById('messageInput').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') sendMessage();
+    });
+</script>
+
+</body>
+</html>

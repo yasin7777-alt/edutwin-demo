@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Помощь — SkillChain</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .faq-container {
+            max-width: 800px;
+            margin: 40px auto;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .faq-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        /* Стили аккордеона */
+        .faq-item {
+            background: white;
+            border-radius: 20px;
+            margin-bottom: 15px;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+            border: 1px solid rgba(108, 99, 255, 0.1);
+            transition: 0.3s;
+        }
+
+        .faq-question {
+            padding: 25px 30px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            font-size: 18px;
+            color: #2D3436;
+        }
+
+        .faq-question:hover {
+            background: #fcfcff;
+            color: var(--primary);
+        }
+
+        .faq-answer {
+            padding: 0 30px;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            color: #636e72;
+            line-height: 1.8;
+            background: #f9faff;
+        }
+
+        /* Состояние при открытии (через чекбокс или класс) */
+        .faq-item.active .faq-answer {
+            padding: 20px 30px 30px;
+            max-height: 500px;
+            border-top: 1px solid #eee;
+        }
+
+        .faq-icon {
+            width: 24px;
+            height: 24px;
+            background: var(--bg);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+            color: var(--primary);
+        }
+
+        .faq-item.active .faq-icon {
+            transform: rotate(45deg);
+            background: var(--primary);
+            color: white;
+        }
+
+        .contact-support {
+            margin-top: 60px;
+            text-align: center;
+            background: var(--glass);
+            padding: 40px;
+            border-radius: 30px;
+            backdrop-filter: blur(10px);
+        }
+    </style>
+</head>
+<body>
+
+<div class="wrapper">
+    <header>
+        <a href="index.html" class="logo">SkillChain</a>
+        <nav>
+            <a href="index.html">Главная</a>
+            <a href="rating.html">Рейтинг</a>
+            <a href="profile.html">Профиль</a>
+        </nav>
+    </header>
+
+    <div class="faq-container">
+        <div class="faq-header">
+            <h1>Часто задаваемые вопросы</h1>
+            <p>Всё, что вам нужно знать о работе платформы SkillChain</p>
+        </div>
+
+        <div class="faq-list">
+            <div class="faq-item">
+                <div class="faq-question">
+                    Что такое Skill Points (SP)?
+                    <span class="faq-icon">+</span>
+                </div>
+                <div class="faq-answer">
+                    Skill Points — это внутренняя валюта нашей платформы. Вы зарабатываете их, когда обучаете других, и тратите, когда учитесь сами. 1 SP эквивалентен примерно 1 минуте качественного обучения.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    Это действительно бесплатно?
+                    <span class="faq-icon">+</span>
+                </div>
+                <div class="faq-answer">
+                    Да! Основная идея SkillChain — прямой обмен знаниями. Вам не нужно платить деньги наставникам, если вы сами вносите вклад в сообщество, обучая других.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    Что даёт рейтинг и отзывы?
+                    <span class="faq-icon">+</span>
+                </div>
+                <div class="faq-answer">
+                    После каждого занятия ученик и учитель оценивают друг друга. Высокий рейтинг поднимает вас в топ списка, что позволяет находить более опытных наставников и получать больше предложений об обмене.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    Безопасно ли пользоваться платформой?
+                    <span class="faq-icon">+</span>
+                </div>
+                <div class="faq-answer">
+                    Мы проверяем профили и используем систему верификации. В случае неподобающего поведения вы всегда можете отправить жалобу, и наша модерация примет меры в течение 24 часов.
+                </div>
+            </div>
+        </div>
+
+        <div class="contact-support">
+            <h3>Остались вопросы?</h3>
+            <p style="margin-bottom: 20px;">Мы всегда готовы помочь вам разобраться.</p>
+            <button onclick="location.href='mailto:support@skillchain.com'">Написать в поддержку</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Скрипт для работы аккордеона
+    document.querySelectorAll('.faq-question').forEach(question => {
+        question.addEventListener('click', () => {
+            const item = question.parentElement;
+            
+            // Закрываем другие открытые вопросы (опционально)
+            document.querySelectorAll('.faq-item').forEach(otherItem => {
+                if (otherItem !== item) otherItem.classList.remove('active');
+            });
+
+            item.classList.toggle('active');
+        });
+    });
+</script>
+
+</body>
+</html>
